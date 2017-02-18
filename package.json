@@ -1,0 +1,33 @@
+{
+  "name": "diet-bot",
+  "version": "1.0.0",
+  "description": "A bot for the Diet Clan Discord",
+  "main": "bot-stable.js",
+  "dependencies": {
+    "discord.io": "^2.4.2",
+    "es6-promise": "^4.0.5",
+    "fs": "^0.0.1-security",
+    "google-tts-api": "^0.0.1",
+    "unirest": "^0.5.1",
+    "youtube-dl": "^1.11.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "!a"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyko28/diet-bot.git"
+  },
+  "keywords": [
+    "diet",
+    "clan",
+    "bot"
+  ],
+  "author": "Scott Robertson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cyko28/diet-bot/issues"
+  },
+  "homepage": "https://github.com/cyko28/diet-bot#readme"
+}
