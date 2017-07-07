@@ -8,7 +8,6 @@ var https = require('https');
 var googleTTS = require('google-tts-api');
 var urlParse  = require('url').parse;
 var latestTweets = require('latest-tweets');
-var cleverbot = require("cleverbot.io");
 
 
 var bot = new Discord.Client({
@@ -20,14 +19,14 @@ var voiceChannelID = "169703393277902848";
 
 bot.on('ready', function(event) {
     //log that you're in
-    console.log('Logged in as %s - %s\n', bot.username, bot.id); 
+    console.log('Logged in as %s - %s\n', bot.username, bot.id);
 
 	//find all users
-	 userList = Object.keys(bot.users); 
-	 
+	 userList = Object.keys(bot.users);
+
     //find all the channels
     channelList = Object.keys(bot.channels);
-	
+
 	bot.setPresence({
 		game:{
 			name:"Bigly Wigly"
@@ -35,70 +34,105 @@ bot.on('ready', function(event) {
 	});
 });
 
-bot.on('message', function(user, userID, channelID, message, event) {
-    if (message === "bing") {
-        bot.sendMessage({
-            to: channelID,
-            message: "bong"
-        });
-    }
-});
+// Init Command Queue Object
+var commandQueue = {
+  queue: [],
+  amount: {
+    current: 0,
+    previous: 0
+  }
+};
 
 bot.on('message', function(user, userID, channelID, message, event) {
-    try {
-		var command = parseCommand(message);
-		if(command != null && command.length > 0) {
-			voiceChannelID = findUserChannel(userID, channelList);
-			switch(command[0]) {
-				case "!help":
-					showHelpInfo(channelID, command[1]);
-				break;
-				case "!buttlord":
-				case "!b":
-					triggerButtlordCommand(voiceChannelID);
-				break;
-				case "!airhorn":
-				case "!audio":
-				case "!a":
-					parseAirhorn(channelID, voiceChannelID, command);
-				break;		
-				case "!say":
-				case "!s":
-					say(voiceChannelID, command);
-				break;
-				case "!join":
-				case "!j":
-					joinChannel(voiceChannelID);
-				break;
-				case "!kick":
-				case "!k":
-					bot.leaveVoiceChannel(voiceChannelID);
-				break;
-				case "!insult":
-				case "!i":
-					insultUserDirectly(userList, channelList, command);
-				break;
-				case "!rave":
-				case "!r":
-					playRaveMusic(voiceChannelID);
-				break;
-				case "!trump":
-				case "!t":
-					playTrump(voiceChannelID);
-				break;
-				case "!trumptweet":
-				case "!tt":
-					showDonaldTrumpTweet(channelID);
-				break;
-				default:
-				    botType(channelID, "That is not a valid command.");
-				break;
-			}
-		}
-	} catch (err) {
-	    console.log("Error: " + err); 
-	}
+    commandQueue.queue.push({user, userID, channelID, message, event});
+    console.log('New Message:',message);
+    checkQueue();
+	});
+
+bot.on('any', function(event) {
+  if(event.d.user_id === bot.userID) console.log('bot did the thing');
 });
+
+function checkQueue() {
+  // If Queue is not empty
+  if (commandQueue.queue.length > 0) {
+    // Track Previous amout to prevent redundant console.logs
+    commandQueue.amount.current = commandQueue.queue.length;
+
+    // If theres a change, log it to console
+    if (commandQueue.amount.current !== commandQueue.amount.previous) {
+      // Log CQ Length
+      console.log('\nCommand Queue Backlog:', commandQueue.queue.length);
+
+      // Log out each item in the CQ
+      for (i=0; i<commandQueue.queue.length; i++) console.log(commandQueue.queue[i].message);
+
+      // Set new previous amount
+      commandQueue.amount.previous = commandQueue.amount.current;
+    }
+
+    // Do a command
+    readCommandQueue(commandQueue.queue);
+    commandQueue.queue.shift();
+  }
+}
+
+function readCommandQueue(CQARRAY) {
+  var user = CQARRAY[0].user;
+  var userID = CQARRAY[0].userID;
+  var channelID = CQARRAY[0].channelID;
+  var message = CQARRAY[0].message;
+  var event = CQARRAY[0].event;
+	var command = parseCommand(message);
+	if(command != null && command.length > 0) {
+		voiceChannelID = findUserChannel(userID, channelList);
+		switch(command[0]) {
+			case "!help":
+				showHelpInfo(channelID, command[1]);
+			break;
+			case "!buttlord":
+			case "!b":
+				triggerButtlordCommand(voiceChannelID);
+			break;
+			case "!airhorn":
+			case "!audio":
+			case "!a":
+				parseAirhorn(channelID, voiceChannelID, command);
+			break;
+			case "!say":
+			case "!s":
+				say(voiceChannelID, command);
+			break;
+			case "!join":
+			case "!j":
+				joinChannel(voiceChannelID);
+			break;
+			case "!kick":
+			case "!k":
+				bot.leaveVoiceChannel(voiceChannelID);
+			break;
+			case "!insult":
+			case "!i":
+				insultUserDirectly(userList, channelList, command);
+			break;
+			case "!rave":
+			case "!r":
+				playRaveMusic(voiceChannelID);
+			break;
+			case "!trump":
+			case "!t":
+				playTrump(voiceChannelID);
+			break;
+			case "!trumptweet":
+			case "!tt":
+				showDonaldTrumpTweet(channelID);
+			break;
+			default:
+			    botType(channelID, "That is not a valid command.");
+			break;
+		}
+	}
+}
 
 function showDonaldTrumpTweet(channelID) {
 	latestTweets('realDonaldTrump', function (err, tweets) {
@@ -116,14 +150,14 @@ function playRaveMusic(voiceChannelParam) {
 
 function playTrump(voiceChannelParam) {
 	var randomInt = Math.floor(Math.random()*9);
-	console.log('Playing trump clip', 'audio/trump/'+randomInt+'.mp3'); 
+	console.log('Playing trump clip', 'audio/trump/'+randomInt+'.mp3');
 	joinChannelPlayAudioAndLeave(voiceChannelParam, 'audio/trump/'+randomInt+'.mp3');
 }
 
 function showHelpInfo(channelID, command) {
 	if(command === "!a") {
 		showAirhornCommands(channelID);
-	} 
+	}
 }
 
 function botType(channelID, messageToType) {
@@ -144,13 +178,13 @@ function showAirhornCommands(channelID) {
 		}
 	  });
 	});
-	
+
 	setTimeout(function() {
 	try {
 		botType(channelID, commands);
 	}catch (e) {}
 	}, 1000);
-	
+
 }
 
 function say(voiceChannelID, command) {
@@ -192,9 +226,9 @@ function joinChannelInsult(username, voiceChannelParam) {
     if(username === "Awod") {
         username = "eh whod";
     }
-	
+
     var sayInsult = true;
-  
+
     if(username === "catcherfreeman") {
 	    var result = Math.floor(Math.random()*9);
 		// give a complement 10% of the time
@@ -202,9 +236,9 @@ function joinChannelInsult(username, voiceChannelParam) {
 		    sayInsult = false;
 		}
     }
-	
+
     var prefixText = username + ", you are a ";
-  
+
     if(sayInsult) {
 	  var selectedCombo = Math.floor(Math.random()*4);
 	  var insult;
@@ -227,7 +261,7 @@ function joinChannelInsult(username, voiceChannelParam) {
 	  joinChannelAndSpeak(voiceChannelParam, insult, true, null);
     } else {
 	  var selectedCombo = Math.floor(Math.random()*2);
-	  
+
 	  var complement;
 	  switch(selectedCombo) {
 	    case 0:
@@ -241,7 +275,7 @@ function joinChannelInsult(username, voiceChannelParam) {
 	  }
 	  joinChannelAndSpeak(voiceChannelParam, complement, true, null);
 	}
-	
+
 }
 
 function includeGetWrecked(){
@@ -265,7 +299,7 @@ function findUserId(username, array) {
     var usernameToSearch = username.toLowerCase();
 	for(i = 0; i < array.length; i++) {
 	   if(bot.users[array[i]].username.toLowerCase().startsWith(usernameToSearch)) {
-	       return [bot.users[array[i]].id, bot.users[array[i]].username]; 
+	       return [bot.users[array[i]].id, bot.users[array[i]].username];
 	   }
 	}
 	return [];
@@ -276,36 +310,36 @@ function joinChannel(voiceChannelParam) {
 }
 
 function joinChannelPlayAudioAndLeave(voiceChannelParam, audioFileLocation) {
-	fs.stat(audioFileLocation, function(err, stat) { 
-	  if (err == null) { 
+	fs.stat(audioFileLocation, function(err, stat) {
+	  if (err == null) {
 		//Let's join the voice channel, the ID is whatever your voice channel's ID is.
 		bot.joinVoiceChannel(voiceChannelParam, function(error, events) {
 			//Check to see if any errors happen while joining.
 			if (error) {
-				bot.leaveVoiceChannel(voiceChannelParam);
-				return console.error(error);	
+				bot.leaveVoiceChannel(voiceChannelParam, checkQueue);
+				return console.error(error);
 			}
-			
+
 			//Then get the audio context
 			bot.getAudioContext(voiceChannelParam, function(error, stream) {
 				//Once again, check to see if any errors exist
 				if (error) {
-					bot.leaveVoiceChannel(voiceChannelParam);
-					return console.error(error);	
+					bot.leaveVoiceChannel(voiceChannelParam, checkQueue);
+					return console.error(error);
 				}
-				
+
 				 fs.createReadStream(audioFileLocation).pipe(stream, {end: false});
-				
+
 				//The stream fires `done` when it's got nothing else to send to Discord.
 				stream.on('done', function() {
-				   bot.leaveVoiceChannel(voiceChannelParam);
+				   bot.leaveVoiceChannel(voiceChannelParam, checkQueue);
 				});
 			});
 		});
 	  } else if(err.code == 'ENOENT') {
         // file does not exist
 	  }
-	}); 
+	});
 }
 
 function joinChannelAndSpeak(voiceChannelParam, text, leaveAfter, soundToPlayFollowingText) {
@@ -314,27 +348,27 @@ function joinChannelAndSpeak(voiceChannelParam, text, leaveAfter, soundToPlayFol
 		//Check to see if any errors happen while joining.
 		if (error) {
 			bot.leaveVoiceChannel(voiceChannelParam);
-			return console.error(error);	
+			return console.error(error);
 		}
-		
+
 		//Then get the audio context
 		bot.getAudioContext(voiceChannelParam, function(error, stream) {
 			//Once again, check to see if any errors exist
 			if (error) {
-				bot.leaveVoiceChannel(voiceChannelParam);
-				return console.error(error);	
+				bot.leaveVoiceChannel(voiceChannelParam, checkQueue);
+				return console.error(error);
 			}
-			
+
 			if(text.length <= 12) {
 				text = "You haven't given me enough to say.";
 			}
-			
+
 			var audioFileName = speakToStream(text, stream, voiceChannelParam, soundToPlayFollowingText);
-						   
+
 			//The stream fires `done` when it's got nothing else to send to Discord.
 			stream.on('done', function() {
 			   if(leaveAfter) {
-			       bot.leaveVoiceChannel(voiceChannelParam);
+			       bot.leaveVoiceChannel(voiceChannelParam, checkQueue);
 			   }
 
 			  // Delete the file after 1 second
@@ -354,9 +388,9 @@ This function creates the Google translate URL, downloads the MP3 and outputs it
 function speakToStream(text, stream, voiceChannelParam, soundToPlayFollowingText) {
 	var fileName = getVoiceFilepath();		      // Generate a unique file name
 	var dest = path.resolve(__dirname, fileName); // file destination
-	
+
 	googleTTS(text, 'En-gb', 0.9)   // speed normal = 1 (default), slow = 0.24. Create the URL via Google TTS API
-	.then(function (url) {	
+	.then(function (url) {
 	  // Download the file, but wait 500 milliseconds before executing the voice stream to ensure the file is written (flaky but it works for now)
 	  downloadFile(url, dest);
 	  setTimeout(function() {
@@ -368,7 +402,7 @@ function speakToStream(text, stream, voiceChannelParam, soundToPlayFollowingText
 	})
 	.catch(function (err) {
 	  console.error(err.stack);
-	  bot.leaveVoiceChannel(voiceChannelParam);
+	  bot.leaveVoiceChannel(voiceChannelParam, checkQueue);
 	});
 	return fileName;
 }

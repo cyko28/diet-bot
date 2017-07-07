@@ -1,0 +1,31 @@
+{
+  "name": "diet-bot",
+  "version": "1.0.0",
+  "description": "A bot for the Diet Clan Discord",
+  "main": "bot-catcher.js",
+  "dependencies": {},
+  "devDependencies": {
+    "discord.io": "^2.5.1",
+    "fs": "0.0.1-security",
+    "google-tts-api": "0.0.1",
+    "http": "0.0.0",
+    "https": "^1.0.0",
+    "latest-tweets": "^1.0.3",
+    "path": "^0.12.7",
+    "request": "^2.81.0",
+    "url": "^0.11.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sc0ttr0berts0n/diet-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sc0ttr0berts0n/diet-bot/issues"
+  },
+  "homepage": "https://github.com/sc0ttr0berts0n/diet-bot#readme"
+}
