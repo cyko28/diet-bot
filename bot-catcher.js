@@ -7,6 +7,9 @@ var http = require('http');
 var https = require('https');
 var googleTTS = require('google-tts-api');
 var urlParse  = require('url').parse;
+var latestTweets = require('latest-tweets');
+var cleverbot = require("cleverbot.io");
+
 
 var bot = new Discord.Client({
     autorun: true,
@@ -24,47 +27,98 @@ bot.on('ready', function(event) {
 	 
     //find all the channels
     channelList = Object.keys(bot.channels);
+	
+	bot.setPresence({
+		game:{
+			name:"Bigly Wigly"
+		}
+	});
 });
 
 bot.on('message', function(user, userID, channelID, message, event) {
-	var command = parseCommand(message);
-	if(command != null && command.length > 0) {
-	    voiceChannelID = findUserChannel(userID, channelList);
-	    switch(command[0]) {
-		    case "!help":
-			    showHelpInfo(channelID, command[1]);
-			break;
-			case "!buttlord":
-			case "!b":
-			    triggerButtlordCommand(voiceChannelID);
-			break;
-			case "!airhorn":
-			case "!audio":
-			case "!a":
-			    parseAirhorn(channelID, voiceChannelID, command);
-		    break;		
-			case "!say":
-			case "!s":
-				say(voiceChannelID, command);
-			break;
-			case "!join":
-			case "!j":
-				joinChannel(voiceChannelID);
-			break;
-			case "!kick":
-			case "!k":
-				bot.leaveVoiceChannel(voiceChannelID);
-			break;
-			case "!insult":
-			case "!i":
-			    insultUserDirectly(userList, channelList, command);
-			break;
-			default:
-				joinChannelAndSpeak(voiceChannelID, "That is not a valid command.", true, null);
-			break;
+    if (message === "bing") {
+        bot.sendMessage({
+            to: channelID,
+            message: "bong"
+        });
+    }
+});
+
+bot.on('message', function(user, userID, channelID, message, event) {
+    try {
+		var command = parseCommand(message);
+		if(command != null && command.length > 0) {
+			voiceChannelID = findUserChannel(userID, channelList);
+			switch(command[0]) {
+				case "!help":
+					showHelpInfo(channelID, command[1]);
+				break;
+				case "!buttlord":
+				case "!b":
+					triggerButtlordCommand(voiceChannelID);
+				break;
+				case "!airhorn":
+				case "!audio":
+				case "!a":
+					parseAirhorn(channelID, voiceChannelID, command);
+				break;		
+				case "!say":
+				case "!s":
+					say(voiceChannelID, command);
+				break;
+				case "!join":
+				case "!j":
+					joinChannel(voiceChannelID);
+				break;
+				case "!kick":
+				case "!k":
+					bot.leaveVoiceChannel(voiceChannelID);
+				break;
+				case "!insult":
+				case "!i":
+					insultUserDirectly(userList, channelList, command);
+				break;
+				case "!rave":
+				case "!r":
+					playRaveMusic(voiceChannelID);
+				break;
+				case "!trump":
+				case "!t":
+					playTrump(voiceChannelID);
+				break;
+				case "!trumptweet":
+				case "!tt":
+					showDonaldTrumpTweet(channelID);
+				break;
+				default:
+				    botType(channelID, "That is not a valid command.");
+				break;
+			}
 		}
+	} catch (err) {
+	    console.log("Error: " + err); 
 	}
 });
+
+function showDonaldTrumpTweet(channelID) {
+	latestTweets('realDonaldTrump', function (err, tweets) {
+	  var result = Math.floor(Math.random()*tweets.length);
+	  var tweetContent = tweets[result].content;
+	  botType(channelID, tweetContent);
+	  console.log(tweets);
+	})
+}
+
+function playRaveMusic(voiceChannelParam) {
+	var randomInt = Math.floor(Math.random()*5);
+	joinChannelPlayAudioAndLeave(voiceChannelParam, 'audio/rave/'+randomInt+'.mp3');
+}
+
+function playTrump(voiceChannelParam) {
+	var randomInt = Math.floor(Math.random()*9);
+	console.log('Playing trump clip', 'audio/trump/'+randomInt+'.mp3'); 
+	joinChannelPlayAudioAndLeave(voiceChannelParam, 'audio/trump/'+randomInt+'.mp3');
+}
 
 function showHelpInfo(channelID, command) {
 	if(command === "!a") {
@@ -135,27 +189,59 @@ function insultUserDirectly(userList, channelList, command) {
 }
 
 function joinChannelInsult(username, voiceChannelParam) {
-  var selectedCombo = Math.floor(Math.random()*4);
-  var prefixText = username + ", you are a ";
-  var insult;
+    if(username === "Awod") {
+        username = "eh whod";
+    }
+	
+    var sayInsult = true;
   
-  switch(selectedCombo) {
-      case 0:
-	    insult = prefixText + insultA[Math.floor(Math.random()*insultA.length)] + " " + insultB[Math.floor(Math.random()*insultB.length)] + " " + insultC[Math.floor(Math.random()*insultC.length)] + " " + includeGetWrecked();
-		break;
-	  case 1:
-	    insult = prefixText + insultA[Math.floor(Math.random()*insultA.length)] + " " + insultB[Math.floor(Math.random()*insultB.length)] + " " + insultD[Math.floor(Math.random()*insultD.length)] + " " + includeGetWrecked();
-		break;
-	  case 2:
-	    insult = prefixText + insultA[Math.floor(Math.random()*insultA.length)] + " " + insultB[Math.floor(Math.random()*insultB.length)] + " " + includeGetWrecked();
-		break;
-	  case 3:
-	    insult = prefixText + insultB[Math.floor(Math.random()*insultB.length)] + " " + insultD[Math.floor(Math.random()*insultD.length)] + " " + includeGetWrecked();
-		break;
-	  default:
-		break;
-  }
-  joinChannelAndSpeak(voiceChannelParam, insult, true, null);
+    if(username === "catcherfreeman") {
+	    var result = Math.floor(Math.random()*9);
+		// give a complement 10% of the time
+		if(result === 0) {
+		    sayInsult = false;
+		}
+    }
+	
+    var prefixText = username + ", you are a ";
+  
+    if(sayInsult) {
+	  var selectedCombo = Math.floor(Math.random()*4);
+	  var insult;
+	  switch(selectedCombo) {
+		  case 0:
+			insult = prefixText + insultA[Math.floor(Math.random()*insultA.length)] + " " + insultB[Math.floor(Math.random()*insultB.length)] + " " + insultC[Math.floor(Math.random()*insultC.length)] + " " + includeGetWrecked();
+			break;
+		  case 1:
+			insult = prefixText + insultA[Math.floor(Math.random()*insultA.length)] + " " + insultB[Math.floor(Math.random()*insultB.length)] + " " + insultD[Math.floor(Math.random()*insultD.length)] + " " + includeGetWrecked();
+			break;
+		  case 2:
+			insult = prefixText + insultA[Math.floor(Math.random()*insultA.length)] + " " + insultB[Math.floor(Math.random()*insultB.length)] + " " + includeGetWrecked();
+			break;
+		  case 3:
+			insult = prefixText + insultB[Math.floor(Math.random()*insultB.length)] + " " + insultD[Math.floor(Math.random()*insultD.length)] + " " + includeGetWrecked();
+			break;
+		  default:
+			break;
+	  }
+	  joinChannelAndSpeak(voiceChannelParam, insult, true, null);
+    } else {
+	  var selectedCombo = Math.floor(Math.random()*2);
+	  
+	  var complement;
+	  switch(selectedCombo) {
+	    case 0:
+		  complement = prefixText + complementA[Math.floor(Math.random()*complementA.length)] + " " + complementB[Math.floor(Math.random()*complementB.length)] + " " + complementC[Math.floor(Math.random()*complementC.length)] + " " + includeGetWrecked();
+		  break;
+		case 1:
+		  complement = prefixText + complementA[Math.floor(Math.random()*complementA.length)] + " " + complementC[Math.floor(Math.random()*complementC.length)] + " " + includeGetWrecked();
+		  break;
+		default:
+		  break;
+	  }
+	  joinChannelAndSpeak(voiceChannelParam, complement, true, null);
+	}
+	
 }
 
 function includeGetWrecked(){
@@ -357,7 +443,11 @@ function parseCommand(string) {
 }
 
 
-var insultA = 'tossing,bloody,shitting,wanking,frothy,stinky,raging,dementing,dumb,fucking,dipping,holy,maiming,cocking,ranting,hairy,girthy,spunking,flipping,slapping,one-direction loving,sodding,blooming,frigging,guzzling,glistering,cock wielding,failed,artist formally known as,unborn,pulsating,naked,throbbing,lonely,failed,stale,spastic,senile,strangely shaped,virgin,bottled,twin-headed,fat,gigantic,sticky,prodigal,bald,bearded,horse-loving,spotty,spitting,dandy,fritzl-admiring,friend of a,indeterminable,overrated,fingerlicking,diaper-wearing,leg-humping,gold-digging,mong loving,trout-faced,cunt rotting,flip-flopping,rotting,inbred,badly drawn,undead,annoying,whoring,leaking,dripping,racist,slutty,cross-eyed,irrelevant,mental,rotating,scurvy looking,rambling,gag sacking,cunting,wrinkled old,dried out,sodding,funky,silly,unhuman,bloated,wanktastic,bum-banging,cockmunching,animal-fondling,stillborn,scruffy-looking,hard-rubbing,rectal,glorious,eye-less,constipated,bastardized,utter,hitler\'s personal,irredeemable,complete,enormous,go suck a,fuckfaced,broadfaced,titless,son of a,demonizing,pigfaced,treacherous,retarded'.split(',');
+var complementA = 'beautiful,lovely,hard-working,wonderful,voluptuous'.split(',');
+var complementB = 'life-giving,flower-like,'.split(',');
+var complementC = 'person,angel,individual'.split(',');
+
+var insultA = 'tossing,bloody,shitting,wanking,frothy,stinky,raging,dementing,dumb,fucking,dipping,holy,maiming,cocking,ranting,hairy,girthy,spunking,flipping,slapping,one-direction loving,trump loving,sodding,blooming,frigging,guzzling,glistering,cock wielding,failed,artist formally known as,unborn,pulsating,naked,throbbing,lonely,failed,stale,spastic,senile,strangely shaped,virgin,bottled,twin-headed,fat,gigantic,sticky,prodigal,bald,bearded,horse-loving,spotty,spitting,dandy,fritzl-admiring,friend of a,indeterminable,overrated,fingerlicking,diaper-wearing,leg-humping,gold-digging,mong loving,trout-faced,cunt rotting,flip-flopping,rotting,inbred,badly drawn,undead,annoying,whoring,leaking,dripping,racist,slutty,cross-eyed,irrelevant,mental,rotating,scurvy looking,rambling,gag sacking,cunting,wrinkled old,dried out,sodding,funky,silly,unhuman,bloated,wanktastic,bum-banging,cockmunching,animal-fondling,stillborn,scruffy-looking,hard-rubbing,rectal,glorious,eye-less,constipated,bastardized,utter,hitler\'s personal,irredeemable,complete,enormous,go suck a,fuckfaced,broadfaced,titless,son of a,demonizing,pigfaced,treacherous,retarded'.split(',');
 var insultB = 'cock,tit,cunt,wank,piss,crap,shit,ass,sperm,nipple,anus,colon,shaft,dick,poop,semen,slut,suck,earwax,fart,scrotum,cock-tip,tea-bag,jizz,cockstorm,bunghole,food trough,bum,butt,shitface,ass,nut,ginger,llama,tramp,fudge,vomit,cum,lard,puke,sphincter,nerf,turd,cocksplurt,cockthistle,dickwhistle,gloryhole,gaylord,spazz,nutsack,fuck,spunk,shitshark,shithawk,fuckwit,dipstick,asswad,chesticle,clusterfuck,douchewaffle,retard'.split(',');
 var insultC = 'force,bottom,hole,goatse,testicle,balls,bucket,biscuit,stain,boy,flaps,erection,mange,brony,weeaboo,twat,twunt,mong,spack,diarrhea,sod,excrement,faggot,pirate,asswipe,sock,sack,barrel,thunder cunt,head,zombie,alien,minge,candle,torch,pipe,bint,jockey,udder,pig,dog,cockroach,worm,MILF,sample,infidel,spunk-bubble,stack,handle,badger,wagon,bandit,lord,bogle,bollock,tranny,knob,nugget,king,hole,kid,trailer,lorry,whale,rag,foot'.split(',');
 var insultD = 'licker,raper,lover,shiner,blender,fucker,assjacker,butler,turd-burglar,packer,rider,wanker,sucker,wiper,experiment,wiper,bender,dictator,basher,piper,slapper,fondler,bastard,handler,herder,fan,amputee,extractor,professor,graduate'.split(',');
