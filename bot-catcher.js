@@ -1,3 +1,5 @@
+/*jshint ignore:start */
+
 // Catcher's file
 var Discord = require('discord.io');
 var fs = require('fs');

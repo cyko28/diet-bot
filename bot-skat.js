@@ -22,6 +22,10 @@ fs.readFile('dietbot-ascii.txt', function(data) {console.log(data);});
 var cQ = {
   queue: [],
   ready: true,
+  addCommand: function() {
+    //Do Add command stuff
+  },
+  commands: []
 };
 
 bot.on('ready', function(event) {
@@ -55,8 +59,8 @@ function checkQueue() {
   if (cQ.queue.length > 0) {
     if(cqInterval == null) {
 	    cqInterval = setInterval(checkQueue, 500);
-	}
-	
+  	}
+
     if (cQ.ready) {
       let userChannel = findUserChannel(cQ.queue[0].userID, channelList);
       joinChannelPlayAudioAndLeave(userChannel, 'audio/buttlord.mp3');
@@ -64,7 +68,7 @@ function checkQueue() {
     }
   } else {
     clearInterval(cqInterval);
-	cqInterval = null;
+  	cqInterval = null;
   }
 }
 
