@@ -35,45 +35,60 @@ bot.on('ready', function(event) {
 });
 
 // Init Command Queue Object
-var commandQueue = {
+var cQ = {
   queue: [],
+  ready: true,
   amount: {
     current: 0,
     previous: 0
+  },
+  makeReady: function() {
+    setTimeout(function() {this.ready = true;},1000);
   }
 };
 
 bot.on('message', function(user, userID, channelID, message, event) {
-    commandQueue.queue.push({user, userID, channelID, message, event});
+    cQ.queue.push({user, userID, channelID, message, event});
     console.log('New Message:',message);
     checkQueue();
 	});
 
-bot.on('any', function(event) {
-  if(event.d.user_id === bot.userID) console.log('bot did the thing');
-});
+// bot.on('any', function(event) {
+//   console.log(event);
+// });
+
+// setInterval(function() {console.log(cQ.queue); console.log('Ready:', cQ.ready);}, 100);
 
 function checkQueue() {
-  // If Queue is not empty
-  if (commandQueue.queue.length > 0) {
-    // Track Previous amout to prevent redundant console.logs
-    commandQueue.amount.current = commandQueue.queue.length;
+  // If not ready, try again in 250ms
+  if (cQ.ready) {
+    console.log('cq was ready');
 
-    // If theres a change, log it to console
-    if (commandQueue.amount.current !== commandQueue.amount.previous) {
-      // Log CQ Length
-      console.log('\nCommand Queue Backlog:', commandQueue.queue.length);
+    // If Queue is not empty
+    if (cQ.queue.length > 0) {
 
-      // Log out each item in the CQ
-      for (i=0; i<commandQueue.queue.length; i++) console.log(commandQueue.queue[i].message);
+      // Track Previous amout to prevent redundant console.logs
+      cQ.amount.current = cQ.queue.length;
 
-      // Set new previous amount
-      commandQueue.amount.previous = commandQueue.amount.current;
+      // If theres a change, log it to console
+      if (cQ.amount.current !== cQ.amount.previous) {
+        // Log CQ Length
+        console.log('\nCommand Queue Backlog:', cQ.queue.length);
+
+        // Log out each item in the CQ
+        for (i=0; i<cQ.queue.length; i++) console.log(cQ.queue[i].message);
+
+        // Set new previous amount
+        cQ.amount.previous = cQ.amount.current;
+      }
+
+      // Do a command
+      readCommandQueue(cQ.queue);
+      cQ.queue.shift();
     }
-
-    // Do a command
-    readCommandQueue(commandQueue.queue);
-    commandQueue.queue.shift();
+  } else {
+    // If cQ not ready
+    console.log(cQ.queue);
   }
 }
 
@@ -310,6 +325,7 @@ function joinChannel(voiceChannelParam) {
 }
 
 function joinChannelPlayAudioAndLeave(voiceChannelParam, audioFileLocation) {
+  cQ.ready = false;
 	fs.stat(audioFileLocation, function(err, stat) {
 	  if (err == null) {
 		//Let's join the voice channel, the ID is whatever your voice channel's ID is.
@@ -333,6 +349,8 @@ function joinChannelPlayAudioAndLeave(voiceChannelParam, audioFileLocation) {
 				//The stream fires `done` when it's got nothing else to send to Discord.
 				stream.on('done', function() {
 				   bot.leaveVoiceChannel(voiceChannelParam, checkQueue);
+           setTimeout(function() {cQ.ready=true;},100);
+           console.log('bot left');
 				});
 			});
 		});
@@ -369,6 +387,7 @@ function joinChannelAndSpeak(voiceChannelParam, text, leaveAfter, soundToPlayFol
 			stream.on('done', function() {
 			   if(leaveAfter) {
 			       bot.leaveVoiceChannel(voiceChannelParam, checkQueue);
+             setTimeout(function() {cQ.ready=true;},100);
 			   }
 
 			  // Delete the file after 1 second
