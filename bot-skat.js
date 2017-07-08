@@ -22,10 +22,6 @@ fs.readFile('dietbot-ascii.txt', function(data) {console.log(data);});
 var cQ = {
   queue: [],
   ready: true,
-  amount: {
-    current: 0,
-    previous: 0
-  }
 };
 
 bot.on('ready', function(event) {
@@ -53,20 +49,6 @@ bot.on('message', function(user, userID, channelID, message, event) {
 function checkQueue() {
   // If Queue is not empty
   if (cQ.queue.length > 0) {
-    // Track Previous amout to prevent redundant console.logs
-    cQ.amount.current = cQ.queue.length;
-
-    // If theres a change, log it to console
-    if (cQ.amount.current !== cQ.amount.previous) {
-      // Log CQ Length
-      console.log('\nCommand Queue Backlog:', cQ.queue.length);
-
-      // Log out each item in the CQ
-      for (i=0; i<cQ.queue.length; i++) console.log(cQ.queue[i].message);
-
-      // Set new previous amount
-      cQ.amount.previous = cQ.amount.current;
-    }
     if (cQ.ready) {
       let userChannel = findUserChannel(cQ.queue[0].userID, channelList);
       joinChannelPlayAudioAndLeave(userChannel, 'audio/buttlord.mp3');
@@ -92,9 +74,10 @@ function joinChannelPlayAudioAndLeave(voiceChannel, audioFileLocation) {
 
     //Let's join the voice channel, the ID is whatever your voice channel's ID is.
 		bot.joinVoiceChannel(voiceChannel, function(error, events) {
+      console.log('Bot Joined the Voice Channel');
 			//Check to see if any errors happen while joining.
 			if (error) {
-				bot.leaveVoiceChannel(voiceChannel, checkQueue);
+				bot.leaveVoiceChannel(voiceChannel);
 				return console.error(error);
 			}
 
@@ -102,7 +85,7 @@ function joinChannelPlayAudioAndLeave(voiceChannel, audioFileLocation) {
 			bot.getAudioContext(voiceChannel, function(error, stream) {
 				//Once again, check to see if any errors exist
 				if (error) {
-					bot.leaveVoiceChannel(voiceChannel, checkQueue);
+					bot.leaveVoiceChannel(voiceChannel);
 					return console.error(error);
 				}
 
@@ -110,7 +93,7 @@ function joinChannelPlayAudioAndLeave(voiceChannel, audioFileLocation) {
 
 				//The stream fires `done` when it's got nothing else to send to Discord.
 				stream.on('done', function() {
-				   bot.leaveVoiceChannel(voiceChannel, checkQueue);
+				   bot.leaveVoiceChannel(voiceChannel);
            setTimeout(function(){cQ.ready = true;},750);
            console.log('Bot Left Voice Channel');
 				});
