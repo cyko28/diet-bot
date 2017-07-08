@@ -41,23 +41,28 @@ bot.on('ready', function(event) {
 	});
 });
 
+var cqInterval;
+
 bot.on('message', function(user, userID, channelID, message, event) {
     cQ.queue.push({user, userID, channelID, message, event});
     console.log('New Message:',message);
+    checkQueue();
 	});
 
 function checkQueue() {
+  console.log('Checking Queue\n', cQ.queue.length);
   // If Queue is not empty
   if (cQ.queue.length > 0) {
+  cqInterval = setInterval(checkQueue, 500);
     if (cQ.ready) {
       let userChannel = findUserChannel(cQ.queue[0].userID, channelList);
       joinChannelPlayAudioAndLeave(userChannel, 'audio/buttlord.mp3');
       cQ.queue.shift();
     }
+  } else {
+    clearInterval(cqInterval);
   }
 }
-
-setInterval(checkQueue, 500);
 
 function findUserChannel(userID, channelList) {
 	for(i = 0; i < channelList.length; i++) {
