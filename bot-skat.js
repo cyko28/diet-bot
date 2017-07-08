@@ -22,6 +22,7 @@ fs.readFile('dietbot-ascii.txt', function(data) {console.log(data);});
 var cQ = {
   queue: [],
   ready: true,
+  commandMap: [],
   addCommand: function(array, method) {
     if (typeof array === 'object') {
       for(i=0; i<array.length; i++) {
@@ -30,8 +31,7 @@ var cQ = {
     } else {
       this.commandMap[array] = method;
     }
-  },
-  commandsMap: []
+  }
 };
 
 bot.on('ready', function(event) {
@@ -49,6 +49,17 @@ bot.on('ready', function(event) {
 			name:"Bigly Wigly"
 		}
 	});
+	
+  cQ.addCommand('!help','doHelpInfo');
+  cQ.addCommand(['!b','!buttlord'],'doButtlord');
+  cQ.addCommand(['!a','!airhorn','!audio'],'doAirhorn');
+  cQ.addCommand(['!s','!say'],'doSay');
+  cQ.addCommand(['!j','!join'],'doJoinChannel');
+  cQ.addCommand(['!k','!kick'],'doLeaveChannel');
+  cQ.addCommand(['!i','!insult'],'doInsult');
+  cQ.addCommand(['!r','!rave'],'doRave');
+  cQ.addCommand(['!t','!trump'],'doTrump');
+  cQ.addCommand(['!t','!trumptweet'], 'doTrumpTweet');
 });
 
 var cqInterval = null;
@@ -122,4 +133,30 @@ function joinChannelPlayAudioAndLeave(voiceChannel, audioFileLocation) {
         // file does not exist
 	  }
 	});
+}
+
+function parseCommand(string) {
+	if (string.substring(0,1) === "!") {
+		//split on space
+		string = string.split(" ");
+
+		var c = 0; //counts how many array items there are
+		var theArray = []; //the output array
+
+		for (i = 0; i < string.length; i++) {
+			// if has !, put into own array
+			if (string[i].substring(0,1) === "!") {
+				theArray[c++] = string[i];
+			} else {
+				//if undefined, make string
+				if(theArray[c] === undefined) {
+					theArray[c++] = string[i];
+				} else {
+					theArray[c++] += " " + string[i];
+				}
+				//rebuild string
+			}
+		}
+		return(theArray);
+	}
 }
