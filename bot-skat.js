@@ -41,7 +41,7 @@ bot.on('ready', function(event) {
 	});
 });
 
-var cqInterval;
+var cqInterval = null;
 
 bot.on('message', function(user, userID, channelID, message, event) {
     cQ.queue.push({user, userID, channelID, message, event});
@@ -53,7 +53,10 @@ function checkQueue() {
   console.log('Checking Queue\n', cQ.queue.length);
   // If Queue is not empty
   if (cQ.queue.length > 0) {
-  cqInterval = setInterval(checkQueue, 500);
+    if(cqInterval == null) {
+	    cqInterval = setInterval(checkQueue, 500);
+	}
+	
     if (cQ.ready) {
       let userChannel = findUserChannel(cQ.queue[0].userID, channelList);
       joinChannelPlayAudioAndLeave(userChannel, 'audio/buttlord.mp3');
@@ -61,6 +64,7 @@ function checkQueue() {
     }
   } else {
     clearInterval(cqInterval);
+	cqInterval = null;
   }
 }
 
