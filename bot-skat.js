@@ -22,10 +22,16 @@ fs.readFile('dietbot-ascii.txt', function(data) {console.log(data);});
 var cQ = {
   queue: [],
   ready: true,
-  addCommand: function() {
-    //Do Add command stuff
+  addCommand: function(array, method) {
+    if (typeof array === 'object') {
+      for(i=0; i<array.length; i++) {
+        this.commandMap[array[i]] = method;
+      }
+    } else {
+      this.commandMap[array] = method;
+    }
   },
-  commands: []
+  commandsMap: []
 };
 
 bot.on('ready', function(event) {
