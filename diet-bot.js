@@ -427,12 +427,14 @@ var BotFunctions = function () {
 			to: channelID,
 			message: messageToType
 		});
+		console.log(chalk.magenta('[Command]') + " Bot Typed: " + messageToType);
 	};
 
 	// Do Trump
 	listOfFunctions.doTrump = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		var randomInt = Math.floor(Math.random()*9);
 		util.joinChannelPlayAudioAndLeave(voiceChannelID, 'audio/trump/'+randomInt+'.mp3', cQ);
+		console.log(chalk.magenta('[Command]') + " Playing Trump Clip: " + 'audio/trump/'+randomInt+'.mp3');
 	};
 
 	// Do Trump Tweet
@@ -446,8 +448,10 @@ var BotFunctions = function () {
 
 	// Do Rave
 	listOfFunctions.doRave = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
-		var randomInt = Math.floor(Math.random()*5);
+		var randomInt = Math.floor(Math.random()*8);
 		util.joinChannelPlayAudioAndLeave(voiceChannelID, 'audio/rave/'+randomInt+'.mp3', cQ);
+		console.log(chalk.magenta('[Command]') + " Playing Rave Clip: " + 'audio/rave/'+randomInt+'.mp3');
+
 	};
 
 	return listOfFunctions;
