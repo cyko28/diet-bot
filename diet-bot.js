@@ -265,44 +265,48 @@ var BotUtil = function () {
 	};
 
 	listOfFunctions.joinChannelAndSay = function(voiceChannel, text, soundToPlayFollowingText, cQ) {
-		cQ.ready = false;
-		//Let's join the voice channel, the ID is whatever your voice channel's ID is.
-		bot.joinVoiceChannel(voiceChannel, function(error, events) {
-			//Check to see if any errors happen while joining.
-			if (error) {
-				bot.leaveVoiceChannel(voiceChannel);
-				setTimeout(function() {cQ.ready=true;},100);
-				return console.error(error);
-			}
-
-			//Then get the audio context
-			bot.getAudioContext(voiceChannel, function(error, stream) {
-				//Once again, check to see if any errors exist
+	  if(voiceChannel !== undefined) {
+			cQ.ready = false;
+			//Let's join the voice channel, the ID is whatever your voice channel's ID is.
+			bot.joinVoiceChannel(voiceChannel, function(error, events) {
+				//Check to see if any errors happen while joining.
 				if (error) {
-					bot.leaveVoiceChannel(voiceChannel, checkQueue);
+					bot.leaveVoiceChannel(voiceChannel);
+					setTimeout(function() {cQ.ready=true;},100);
 					return console.error(error);
 				}
 
-				if(text.length <= 12) {
-					text = "You haven't given me enough to say.";
-				}
+				//Then get the audio context
+				bot.getAudioContext(voiceChannel, function(error, stream) {
+					//Once again, check to see if any errors exist
+					if (error) {
+						bot.leaveVoiceChannel(voiceChannel, checkQueue);
+						return console.error(error);
+					}
 
-				var audioFileName = listOfFunctions.speakToStream(text, stream, voiceChannel, soundToPlayFollowingText);
+					if(text.length <= 12) {
+						text = "You haven't given me enough to say.";
+					}
 
-				//The stream fires `done` when it's got nothing else to send to Discord.
-				stream.on('done', function() {
-					bot.leaveVoiceChannel(voiceChannel, checkQueue);
-					setTimeout(function() {cQ.ready=true;},100);
+					var audioFileName = listOfFunctions.speakToStream(text, stream, voiceChannel, soundToPlayFollowingText);
 
-					// Delete the file after 1 second
-					setTimeout(function() {
-					try {
-						fs.unlinkSync(audioFileName);
-					}catch (e) {/* For some reason an error throws after a file deletes, ignore it */ }
-					}, 1000);
+					//The stream fires `done` when it's got nothing else to send to Discord.
+					stream.on('done', function() {
+						bot.leaveVoiceChannel(voiceChannel, checkQueue);
+						setTimeout(function() {cQ.ready=true;},100);
+
+						// Delete the file after 1 second
+						setTimeout(function() {
+						try {
+							fs.unlinkSync(audioFileName);
+						}catch (e) {/* For some reason an error throws after a file deletes, ignore it */ }
+						}, 1000);
+					});
 				});
 			});
-		});
+		}
+
+		
 	};
 	return listOfFunctions;
 };
@@ -337,7 +341,7 @@ var BotFunctions = function () {
 
 	// Join Channel and Insult (private, only used by BotFunctions)
 	listOfFunctions.joinChannelInsult = function(username, voiceChannelID, cQ) {
-		console.log("Attempting to insulting " + username);
+		console.log("Attempting to insult " + username);
 		if(username === "Awod") {
 			username = "eh whod";
 		}
