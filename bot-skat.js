@@ -138,8 +138,8 @@ function parseCommand(string) {
 }
 
 var BotUtil = function () {
-	var botutil = {};
-	botutil.joinChannelPlayAudioAndLeave = function(voiceChannel, audioFileLocation, cQ) {
+	var listOfFunctions = {};
+	listOfFunctions.joinChannelPlayAudioAndLeave = function(voiceChannel, audioFileLocation, cQ) {
 		cQ.ready = false;
 		fs.stat(audioFileLocation, function(err, stat) {
 			if (err == null) {
@@ -176,13 +176,13 @@ var BotUtil = function () {
 			}
 		});
 	};
-	return botutil;
+	return listOfFunctions;
 }
 
 var BotFunctions = function () {
   var util = BotUtil();
-	var botfunctions = {};
-	botfunctions.doButtlord = function(user, userID, channelID, message, event, command, cQ) {
+	var listOfFunctions = {};
+	listOfFunctions.doButtlord = function(user, userID, channelID, message, event, command, cQ) {
 	  var userVoiceChannel = findUserChannel(userID, channelList);
 		var randomInt = Math.floor(Math.random()*9);
 		if(randomInt >= 8) {
@@ -190,6 +190,6 @@ var BotFunctions = function () {
 			util.joinChannelPlayAudioAndLeave(userVoiceChannel, 'audio/buttlord.mp3', cQ);
 		}
 	};
-	return botfunctions;
+	return listOfFunctions;
 }
 
