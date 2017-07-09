@@ -7,7 +7,7 @@ var request = require('request');
 var http = require('http');
 var https = require('https');
 var googleTTS = require('google-tts-api');
-var urlParse  = require('url').parse;
+var urlParse	= require('url').parse;
 var latestTweets = require('latest-tweets');
 
 var bot = new Discord.Client({
@@ -16,33 +16,33 @@ var bot = new Discord.Client({
 });
 
 // Pretty ASCII boot screen
-fs.readFile('dietbot-ascii.txt', function(data) {console.log(data);});
+fs.readFile('dietbot-ascii.txt', 'utf8', function(err, data) {console.log(data);});
 
 // Init Command Queue Object
 var cQ = {
-  queue: [],
-  ready: true,
-  commandMap: [],
-  addCommand: function(array, method) {
-    if (typeof array === 'object') {
-      for(i=0; i<array.length; i++) {
-        this.commandMap[array[i]] = method;
-      }
-    } else {
-      this.commandMap[array] = method;
-    }
-  }
+	queue: [],
+	ready: true,
+	commandMap: [],
+	addCommand: function(array, method) {
+		if (typeof array === 'object') {
+			for(i=0; i<array.length; i++) {
+				this.commandMap[array[i]] = method;
+			}
+		} else {
+			this.commandMap[array] = method;
+		}
+	}
 };
 
 bot.on('ready', function(event) {
-  //log that you're in
-  console.log('Logged in as %s - %s\n', bot.username, bot.id);
+	//log that you're in
+	console.log('Logged in as %s - %s\n', bot.username, bot.id);
 
 	//find all users
 	userList = Object.keys(bot.users);
 
-  //find all the channels
-  channelList = Object.keys(bot.channels);
+	//find all the channels
+	channelList = Object.keys(bot.channels);
 
 	this.setPresence({
 		game:{
@@ -50,42 +50,41 @@ bot.on('ready', function(event) {
 		}
 	});
 
-  cQ.addCommand('!help','doHelpInfo');
-  cQ.addCommand(['!b','!buttlord'],'doButtlord');
-  cQ.addCommand(['!a','!airhorn','!audio'],'doAirhorn');
-  cQ.addCommand(['!s','!say'],'doSay');
-  cQ.addCommand(['!j','!join'],'doJoinChannel');
-  cQ.addCommand(['!k','!kick'],'doLeaveChannel');
-  cQ.addCommand(['!i','!insult'],'doInsult');
-  cQ.addCommand(['!r','!rave'],'doRave');
-  cQ.addCommand(['!t','!trump'],'doTrump');
-  cQ.addCommand(['!tt','!trumptweet'], 'doTrumpTweet');
+	cQ.addCommand('!help','doHelpInfo');
+	cQ.addCommand(['!b','!buttlord'],'doButtlord');
+	cQ.addCommand(['!a','!airhorn','!audio'],'doAirhorn');
+	cQ.addCommand(['!s','!say'],'doSay');
+	cQ.addCommand(['!j','!join'],'doJoinChannel');
+	cQ.addCommand(['!k','!kick'],'doLeaveChannel');
+	cQ.addCommand(['!i','!insult'],'doInsult');
+	cQ.addCommand(['!r','!rave'],'doRave');
+	cQ.addCommand(['!t','!trump'],'doTrump');
+	cQ.addCommand(['!tt','!trumptweet'], 'doTrumpTweet');
 });
 
 var cqInterval = null;
 
 bot.on('message', function(user, userID, channelID, message, event) {
 	cQ.queue.push({user, userID, channelID, message, event});
-	console.log('New Message: ',message);
 	checkQueue();
 });
 
 function checkQueue() {
-  console.log('Checking Queue\n', cQ.queue.length);
-  // If Queue is not empty
-  if (cQ.queue.length > 0) {
-    if(cqInterval == null) {
-	    cqInterval = setInterval(checkQueue, 500);
-  	}
+	console.log('Checking Queue. Current size: %d', cQ.queue.length);
+	// If Queue is not empty
+	if (cQ.queue.length > 0) {
+		if(cqInterval == null) {
+			cqInterval = setInterval(checkQueue, 500);
+		}
 
-    if (cQ.ready) {
-      extractFromQueue (cQ.queue[0]);
-      cQ.queue.shift();
-    }
-  } else {
-    clearInterval(cqInterval);
-  	cqInterval = null;
-  }
+		if (cQ.ready) {
+			extractFromQueue (cQ.queue[0]);
+			cQ.queue.shift();
+		}
+	} else {
+		clearInterval(cqInterval);
+		cqInterval = null;
+	}
 }
 
 function extractFromQueue(queueItem) {
@@ -94,18 +93,21 @@ function extractFromQueue(queueItem) {
 	var channelID = queueItem.channelID;
 	var message = queueItem.message;
 	var event = queueItem.event;
-  var voiceChannelID = findUserChannel(userID, channelList);
+	var voiceChannelID = findUserChannel(userID, channelList);
 
 	var functions = BotFunctions();
 
 	var command = parseCommand(message);
 	if(command != null && command.length > 0) {
 		try {
-      functions[cQ.commandMap[command[0]]](user, userID, channelID, voiceChannelID, message, event, command, cQ);
+			if(functions[cQ.commandMap[command[0]]] !== undefined) {
+				functions[cQ.commandMap[command[0]]](user, userID, channelID, voiceChannelID, message, event, command, cQ);
+			} else {
+				functions.doBotType(channelID, "That is not a valid command.")
+			}
 		} catch (e) {
-			console.log("Could not find function for " + command[0] + "\n"+e);
+			console.log("Error finding function associated to command %s. \n%s ", command[0], e);
 		}
-
 	}
 }
 
@@ -120,9 +122,9 @@ function findUserChannel(userID, channelList) {
 function findUserId(username, array) {
 	var usernameToSearch = username.toLowerCase();
 	for(i = 0; i < array.length; i++) {
-	   if(bot.users[array[i]].username.toLowerCase().startsWith(usernameToSearch)) {
-	       return [bot.users[array[i]].id, bot.users[array[i]].username];
-	   }
+		 if(bot.users[array[i]].username.toLowerCase().startsWith(usernameToSearch)) {
+				 return [bot.users[array[i]].id, bot.users[array[i]].username];
+		 }
 	}
 	return [];
 }
@@ -154,50 +156,50 @@ function parseCommand(string) {
 }
 
 function downloadFile (url, dest) {
-  return new Promise((resolve, reject) => {
-    const info = urlParse(url);
-    const httpClient = info.protocol === 'https:' ? https : http;
-    const options = {
-      host: info.host,
-      path: info.path,
-      headers: {
-        'user-agent': 'Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0'
-      }
-    };
+	return new Promise((resolve, reject) => {
+		const info = urlParse(url);
+		const httpClient = info.protocol === 'https:' ? https : http;
+		const options = {
+			host: info.host,
+			path: info.path,
+			headers: {
+				'user-agent': 'Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0'
+			}
+		};
 
-    httpClient.get(options, function(res) {
-      // check status code
-      if (res.statusCode !== 200) {
-        reject(new Error(`request to ${url} failed, status code = ${res.statusCode} (${res.statusMessage})`));
-        return;
-      }
+		httpClient.get(options, function(res) {
+			// check status code
+			if (res.statusCode !== 200) {
+				reject(new Error(`request to ${url} failed, status code = ${res.statusCode} (${res.statusMessage})`));
+				return;
+			}
 
-      const file = fs.createWriteStream(dest);
-      file.on('finish', function() {
-        // close() is async, call resolve after close completes.
-        file.close(resolve);
-      });
-      file.on('error', function (err) {
-        // Delete the file async. (But we don't check the result)
-        fs.unlink(dest);
-        reject(err);
-      });
+			const file = fs.createWriteStream(dest);
+			file.on('finish', function() {
+				// close() is async, call resolve after close completes.
+				file.close(resolve);
+			});
+			file.on('error', function (err) {
+				// Delete the file async. (But we don't check the result)
+				fs.unlink(dest);
+				reject(err);
+			});
 
-      res.pipe(file);
-    })
-    .on('error', function(err) {
-      reject(err);
-    })
-    .end();
-  });
+			res.pipe(file);
+		})
+		.on('error', function(err) {
+			reject(err);
+		})
+		.end();
+	});
 }
 
 function includeGetWrecked(){
-    var randomInt = Math.floor(Math.random()*9);
+		var randomInt = Math.floor(Math.random()*9);
 	if(randomInt == 8) {
-	    return ". Get wrecked.";
+			return ". Get wrecked.";
 	} else {
-	    return "";
+			return "";
 	}
 }
 
@@ -207,23 +209,23 @@ var BotUtil = function () {
 		cQ.ready = false;
 		fs.stat(audioFileLocation, function(err, stat) {
 			if (err == null) {
-
 			//Let's join the voice channel, the ID is whatever your voice channel's ID is.
 			bot.joinVoiceChannel(voiceChannel, function(error, events) {
-				console.log('Bot Joined the Voice Channel');
 				//Check to see if any errors happen while joining.
 				if (error) {
 					bot.leaveVoiceChannel(voiceChannel);
-          setTimeout(function(){cQ.ready = true;},750);
+					setTimeout(function(){cQ.ready = true;},750);
 					return console.error(error);
 				}
+				
+				console.log('Bot Joined the Voice Channel %s', voiceChannel);
 
 				//Then get the audio context
 				bot.getAudioContext(voiceChannel, function(error, stream) {
 					//Once again, check to see if any errors exist
 					if (error) {
 						bot.leaveVoiceChannel(voiceChannel);
-            setTimeout(function(){cQ.ready = true;},750);
+						setTimeout(function(){cQ.ready = true;},750);
 						return console.error(error);
 					}
 
@@ -233,12 +235,12 @@ var BotUtil = function () {
 					stream.on('done', function() {
 						bot.leaveVoiceChannel(voiceChannel);
 						setTimeout(function(){cQ.ready = true;},750);
-						console.log('Bot Left Voice Channel');
+						console.log('Bot Left the Voice Channel');
 					});
 				});
 			});
 			} else if(err.code == 'ENOENT') {
-        setTimeout(function(){cQ.ready = true;},750);
+				setTimeout(function(){cQ.ready = true;},750);
 			}
 		});
 	};
@@ -247,7 +249,7 @@ var BotUtil = function () {
 		var fileName = "audio/" + new Date().getTime() + ".mp3";	// Generate a unique file name
 		var dest = path.resolve(__dirname, fileName); // file destination
 
-		googleTTS(text, 'En-gb', 0.9)   // speed normal = 1 (default), slow = 0.24. Create the URL via Google TTS API
+		googleTTS(text, 'En-gb', 0.9)	 // speed normal = 1 (default), slow = 0.24. Create the URL via Google TTS API
 		.then(function (url) {
 			// Download the file, but wait 500 milliseconds before executing the voice stream to ensure the file is written (flaky but it works for now)
 			downloadFile(url, dest);
@@ -265,7 +267,7 @@ var BotUtil = function () {
 	};
 
 	listOfFunctions.joinChannelAndSay = function(voiceChannel, text, soundToPlayFollowingText, cQ) {
-	  if(voiceChannel !== undefined) {
+		if(voiceChannel !== undefined) {
 			cQ.ready = false;
 			//Let's join the voice channel, the ID is whatever your voice channel's ID is.
 			bot.joinVoiceChannel(voiceChannel, function(error, events) {
@@ -305,18 +307,16 @@ var BotUtil = function () {
 				});
 			});
 		}
-
-		
 	};
 	return listOfFunctions;
 };
 
 var BotFunctions = function () {
-  var util = BotUtil();
+	var util = BotUtil();
 	var listOfFunctions = {};
 
 	// Do Buttlord
-  listOfFunctions.doButtlord = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
+	listOfFunctions.doButtlord = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		var randomInt = Math.floor(Math.random()*9);
 		if(randomInt >= 8) {
 		} else {
@@ -325,9 +325,9 @@ var BotFunctions = function () {
 	};
 
 	// Do Airhorn
-  listOfFunctions.doAirhorn = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
-    filePath = "audio/airhorn" + ((command[1] !== undefined)? "-" + command[1] : "") + ".mp3";
-  	util.joinChannelPlayAudioAndLeave(voiceChannelID, filePath, cQ);
+	listOfFunctions.doAirhorn = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
+		filePath = "audio/airhorn" + ((command[1] !== undefined)? "-" + command[1] : "") + ".mp3";
+		util.joinChannelPlayAudioAndLeave(voiceChannelID, filePath, cQ);
 	};
 
 	// Do Say
@@ -341,7 +341,7 @@ var BotFunctions = function () {
 
 	// Join Channel and Insult (private, only used by BotFunctions)
 	listOfFunctions.joinChannelInsult = function(username, voiceChannelID, cQ) {
-		console.log("Attempting to insult " + username);
+		console.log("Attempting to insult %s",  username);
 		if(username === "Awod") {
 			username = "eh whod";
 		}
@@ -354,12 +354,12 @@ var BotFunctions = function () {
 			if(result === 0) {
 					sayInsult = false;
 			}
-    }
+		}
 
-    var prefixText = username + ", you are a ";
+		var prefixText = username + ", you are a ";
 		var selectedCombo = Math.floor(Math.random()*(sayInsult ? 4 : 2));
 
-    if(sayInsult) {
+		if(sayInsult) {
 			var insult;
 			switch(selectedCombo) {
 				case 0:
@@ -378,7 +378,7 @@ var BotFunctions = function () {
 				break;
 			}
 			util.joinChannelAndSay(voiceChannelID, insult, null, cQ);
-    } else {
+		} else {
 			var complement;
 			switch(selectedCombo) {
 				case 0:
@@ -402,16 +402,23 @@ var BotFunctions = function () {
 			var userToInsultVoiceChannelId = findUserChannel(userData[0], channelList);
 			listOfFunctions.joinChannelInsult(userData[1], userToInsultVoiceChannelId, cQ);
 		} else {
-		  console.log("Could not find user " + username);
+			console.log("Could not find user %s ", username);
 		}
 	};
 
-  listOfFunctions.doJoinChannel = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
+	listOfFunctions.doJoinChannel = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		bot.joinVoiceChannel(voiceChannelID);
 	};
 
-  listOfFunctions.doLeaveChannel = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
+	listOfFunctions.doLeaveChannel = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		bot.leaveVoiceChannel(voiceChannelID);
+	};
+	
+	listOfFunctions.doBotType = function(channelID, messageToType) {
+		bot.sendMessage({
+			to: channelID,
+			message: messageToType
+		});
 	};
 
 	return listOfFunctions;
