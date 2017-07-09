@@ -11,8 +11,8 @@ var urlParse  = require('url').parse;
 var latestTweets = require('latest-tweets');
 
 var bot = new Discord.Client({
-    autorun: true,
-    token: "Mjc5ODc5Mzk4MzIzMjU3MzQ2.C4BW3Q.uzwb7aUX467ifmjRh_ZYoXQ9fJM"
+	autorun: true,
+	token: "Mjc5ODc5Mzk4MzIzMjU3MzQ2.C4BW3Q.uzwb7aUX467ifmjRh_ZYoXQ9fJM"
 });
 
 // Pretty ASCII boot screen
@@ -65,10 +65,10 @@ bot.on('ready', function(event) {
 var cqInterval = null;
 
 bot.on('message', function(user, userID, channelID, message, event) {
-    cQ.queue.push({user, userID, channelID, message, event});
-    console.log('New Message:',message);
-    checkQueue();
-	});
+	cQ.queue.push({user, userID, channelID, message, event});
+	console.log('New Message: ',message);
+	checkQueue();
+});
 
 function checkQueue() {
   console.log('Checking Queue\n', cQ.queue.length);
@@ -79,8 +79,7 @@ function checkQueue() {
   	}
 
     if (cQ.ready) {
-      let userChannel = findUserChannel(cQ.queue[0].userID, channelList);
-      joinChannelPlayAudioAndLeave(userChannel, 'audio/buttlord.mp3');
+      extractFromQueue (cQ.queue[0]);
       cQ.queue.shift();
     }
   } else {
@@ -89,50 +88,27 @@ function checkQueue() {
   }
 }
 
+function extractFromQueue(queueItem) {
+	var user = queueItem.user;
+	var userID = queueItem.userID;
+	var channelID = queueItem.channelID;
+	var message = queueItem.message;
+	var event = queueItem.event;
+	
+	var functions = BotFunctions();
+	
+	var command = parseCommand(message);
+	if(command != null && command.length > 0) {
+		functions[cQ.commandMap[command[0]]](user, userID, channelID, message, event, command, cQ);
+	}
+}
+
 function findUserChannel(userID, channelList) {
 	for(i = 0; i < channelList.length; i++) {
 		if (bot.channels[channelList[i]].members[userID] !== undefined) {
 			return bot.channels[channelList[i]].members[userID].channel_id;
 		}
 	}
-}
-
-function joinChannelPlayAudioAndLeave(voiceChannel, audioFileLocation) {
-  cQ.ready = false;
-	fs.stat(audioFileLocation, function(err, stat) {
-	  if (err == null) {
-
-    //Let's join the voice channel, the ID is whatever your voice channel's ID is.
-		bot.joinVoiceChannel(voiceChannel, function(error, events) {
-      console.log('Bot Joined the Voice Channel');
-			//Check to see if any errors happen while joining.
-			if (error) {
-				bot.leaveVoiceChannel(voiceChannel);
-				return console.error(error);
-			}
-
-			//Then get the audio context
-			bot.getAudioContext(voiceChannel, function(error, stream) {
-				//Once again, check to see if any errors exist
-				if (error) {
-					bot.leaveVoiceChannel(voiceChannel);
-					return console.error(error);
-				}
-
-				fs.createReadStream(audioFileLocation).pipe(stream, {end: false});
-
-				//The stream fires `done` when it's got nothing else to send to Discord.
-				stream.on('done', function() {
-				   bot.leaveVoiceChannel(voiceChannel);
-           setTimeout(function(){cQ.ready = true;},750);
-           console.log('Bot Left Voice Channel');
-				});
-			});
-		});
-	  } else if(err.code == 'ENOENT') {
-        // file does not exist
-	  }
-	});
 }
 
 function parseCommand(string) {
@@ -160,3 +136,60 @@ function parseCommand(string) {
 		return(theArray);
 	}
 }
+
+var BotUtil = function () {
+	var botutil = {};
+	botutil.joinChannelPlayAudioAndLeave = function(voiceChannel, audioFileLocation, cQ) {
+		cQ.ready = false;
+		fs.stat(audioFileLocation, function(err, stat) {
+			if (err == null) {
+
+			//Let's join the voice channel, the ID is whatever your voice channel's ID is.
+			bot.joinVoiceChannel(voiceChannel, function(error, events) {
+				console.log('Bot Joined the Voice Channel');
+				//Check to see if any errors happen while joining.
+				if (error) {
+					bot.leaveVoiceChannel(voiceChannel);
+					return console.error(error);
+				}
+
+				//Then get the audio context
+				bot.getAudioContext(voiceChannel, function(error, stream) {
+					//Once again, check to see if any errors exist
+					if (error) {
+						bot.leaveVoiceChannel(voiceChannel);
+						return console.error(error);
+					}
+
+					fs.createReadStream(audioFileLocation).pipe(stream, {end: false});
+
+					//The stream fires `done` when it's got nothing else to send to Discord.
+					stream.on('done', function() {
+						bot.leaveVoiceChannel(voiceChannel);
+						setTimeout(function(){cQ.ready = true;},750);
+						console.log('Bot Left Voice Channel');
+					});
+				});
+			});
+			} else if(err.code == 'ENOENT') {
+					// file does not exist
+			}
+		});
+	};
+	return botutil;
+}
+
+var BotFunctions = function () {
+  var util = BotUtil();
+	var botfunctions = {};
+	botfunctions.doButtlord = function(user, userID, channelID, message, event, command, cQ) {
+	  var userVoiceChannel = findUserChannel(userID, channelList);
+		var randomInt = Math.floor(Math.random()*9);
+		if(randomInt >= 8) {
+		} else {
+			util.joinChannelPlayAudioAndLeave(userVoiceChannel, 'audio/buttlord.mp3', cQ);
+		}
+	};
+	return botfunctions;
+}
+
