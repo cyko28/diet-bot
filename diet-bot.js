@@ -242,7 +242,7 @@ var BotUtil = function () {
 			}
 		});
 	};
-	
+
 	listOfFunctions.speakToStream = function(text, stream, voiceChannel, soundToPlayFollowingText) {
 		var fileName = "audio/" + new Date().getTime() + ".mp3";	// Generate a unique file name
 		var dest = path.resolve(__dirname, fileName); // file destination
@@ -263,7 +263,7 @@ var BotUtil = function () {
 		});
 		return fileName;
 	};
-	
+
 	listOfFunctions.joinChannelAndSay = function(voiceChannel, text, soundToPlayFollowingText, cQ) {
 		cQ.ready = false;
 		//Let's join the voice channel, the ID is whatever your voice channel's ID is.
@@ -310,7 +310,7 @@ var BotUtil = function () {
 var BotFunctions = function () {
   var util = BotUtil();
 	var listOfFunctions = {};
-	
+
 	// Do Buttlord
   listOfFunctions.doButtlord = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		var randomInt = Math.floor(Math.random()*9);
@@ -319,13 +319,13 @@ var BotFunctions = function () {
 			util.joinChannelPlayAudioAndLeave(voiceChannelID, 'audio/buttlord.mp3', cQ);
 		}
 	};
-	
+
 	// Do Airhorn
   listOfFunctions.doAirhorn = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
     filePath = "audio/airhorn" + ((command[1] !== undefined)? "-" + command[1] : "") + ".mp3";
   	util.joinChannelPlayAudioAndLeave(voiceChannelID, filePath, cQ);
 	};
-	
+
 	// Do Say
 	listOfFunctions.doSay = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		var whatToSay = "";
@@ -334,14 +334,14 @@ var BotFunctions = function () {
 		}
 		util.joinChannelAndSay(voiceChannelID, whatToSay, null, cQ);
 	};
-	
+
 	// Join Channel and Insult (private, only used by BotFunctions)
 	listOfFunctions.joinChannelInsult = function(username, voiceChannelID, cQ) {
 		console.log("Attempting to insulting " + username);
 		if(username === "Awod") {
 			username = "eh whod";
 		}
-		
+
 		var sayInsult = true;
 
 		if(username === "catcherfreeman") {
@@ -401,17 +401,17 @@ var BotFunctions = function () {
 		  console.log("Could not find user " + username);
 		}
 	};
-	
+
   listOfFunctions.doJoinChannel = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		bot.joinVoiceChannel(voiceChannelID);
 	};
-	
+
   listOfFunctions.doLeaveChannel = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		bot.leaveVoiceChannel(voiceChannelID);
 	};
-	
+
 	return listOfFunctions;
-}
+};
 
 
 var complementA = 'beautiful,lovely,hard-working,wonderful,voluptuous'.split(',');
@@ -422,6 +422,3 @@ var insultA = 'tossing,bloody,shitting,wanking,frothy,stinky,raging,dementing,du
 var insultB = 'cock,tit,cunt,wank,piss,crap,shit,ass,sperm,nipple,anus,colon,shaft,dick,poop,semen,slut,suck,earwax,fart,scrotum,cock-tip,tea-bag,jizz,cockstorm,bunghole,food trough,bum,butt,shitface,ass,nut,ginger,llama,tramp,fudge,vomit,cum,lard,puke,sphincter,nerf,turd,cocksplurt,cockthistle,dickwhistle,gloryhole,gaylord,spazz,nutsack,fuck,spunk,shitshark,shithawk,fuckwit,dipstick,asswad,chesticle,clusterfuck,douchewaffle,retard'.split(',');
 var insultC = 'force,bottom,hole,goatse,testicle,balls,bucket,biscuit,stain,boy,flaps,erection,mange,brony,weeaboo,twat,twunt,mong,spack,diarrhea,sod,excrement,faggot,pirate,asswipe,sock,sack,barrel,thunder cunt,head,zombie,alien,minge,candle,torch,pipe,bint,jockey,udder,pig,dog,cockroach,worm,MILF,sample,infidel,spunk-bubble,stack,handle,badger,wagon,bandit,lord,bogle,bollock,tranny,knob,nugget,king,hole,kid,trailer,lorry,whale,rag,foot'.split(',');
 var insultD = 'licker,raper,lover,shiner,blender,fucker,assjacker,butler,turd-burglar,packer,rider,wanker,sucker,wiper,experiment,wiper,bender,dictator,basher,piper,slapper,fondler,bastard,handler,herder,fan,amputee,extractor,professor,graduate'.split(',');
-
-
-
