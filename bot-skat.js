@@ -99,7 +99,12 @@ function extractFromQueue(queueItem) {
 	
 	var command = parseCommand(message);
 	if(command != null && command.length > 0) {
-		functions[cQ.commandMap[command[0]]](user, userID, channelID, message, event, command, cQ);
+		try {
+			functions[cQ.commandMap[command[0]]](user, userID, channelID, message, event, command, cQ);
+		}catch (e) {
+			console.log("Could not find function for " + command[0] + "\n"+e);
+		}
+
 	}
 }
 
