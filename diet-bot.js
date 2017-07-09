@@ -1,6 +1,7 @@
 /*jshint esversion: 6 */
 
 var Discord = require('discord.io');
+var chalk = require('chalk');
 var fs = require('fs');
 var path = require('path');
 var request = require('request');
@@ -70,7 +71,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 });
 
 function checkQueue() {
-	console.log('Checking Queue. Current size: %d', cQ.queue.length);
+	console.log(chalk.yellow('Checking Queue. Current size:', cQ.queue.length));
 	// If Queue is not empty
 	if (cQ.queue.length > 0) {
 		if(cqInterval == null) {
@@ -327,6 +328,7 @@ var BotFunctions = function () {
 	// Do Airhorn
 	listOfFunctions.doAirhorn = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		filePath = "audio/airhorn" + ((command[1] !== undefined)? "-" + command[1] : "") + ".mp3";
+		console.log(chalk.magenta('[Command]') + ' Playing Airhorn: %s', filePath);
 		util.joinChannelPlayAudioAndLeave(voiceChannelID, filePath, cQ);
 	};
 
@@ -337,11 +339,12 @@ var BotFunctions = function () {
 			whatToSay+=command[i] + " ";
 		}
 		util.joinChannelAndSay(voiceChannelID, whatToSay, null, cQ);
+		console.log(chalk.magenta('[Command]') + ' Saying \'' + whatToSay + '\n')
 	};
 
 	// Join Channel and Insult (private, only used by BotFunctions)
 	listOfFunctions.joinChannelInsult = function(username, voiceChannelID, cQ) {
-		console.log("Attempting to insult %s",  username);
+		console.log(chalk.magenta('[Command]') + " Insulting %s",  username);
 		if(username === "Awod") {
 			username = "eh whod";
 		}
@@ -409,11 +412,13 @@ var BotFunctions = function () {
 	// Do Join Channel
 	listOfFunctions.doJoinChannel = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		bot.joinVoiceChannel(voiceChannelID);
+		console.log(chalk.magenta('[Command]') + " Bot Joining Channel");
 	};
 
 	// Do leave Channel
 	listOfFunctions.doLeaveChannel = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		bot.leaveVoiceChannel(voiceChannelID);
+		console.log(chalk.magenta('[Command]') + " Bot Leaving Channel");
 	};
 
 	// Do Bot Type

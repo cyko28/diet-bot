@@ -5,6 +5,7 @@
   "main": "bot-catcher.js",
   "dependencies": {},
   "devDependencies": {
+    "chalk": "^2.0.1",
     "discord.io": "^2.5.1",
     "fs": "0.0.1-security",
     "google-tts-api": "0.0.1",
