@@ -305,7 +305,7 @@ var BotUtil = function () {
 		});
 	};
 	return listOfFunctions;
-}
+};
 
 var BotFunctions = function () {
   var util = BotUtil();
@@ -353,9 +353,9 @@ var BotFunctions = function () {
     }
 
     var prefixText = username + ", you are a ";
+		var selectedCombo = Math.floor(Math.random()*(sayInsult ? 4 : 2));
 
     if(sayInsult) {
-			var selectedCombo = Math.floor(Math.random()*4);
 			var insult;
 			switch(selectedCombo) {
 				case 0:
@@ -375,8 +375,6 @@ var BotFunctions = function () {
 			}
 			util.joinChannelAndSay(voiceChannelID, insult, null, cQ);
     } else {
-			var selectedCombo = Math.floor(Math.random()*2);
-
 			var complement;
 			switch(selectedCombo) {
 				case 0:
