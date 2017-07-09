@@ -103,7 +103,7 @@ function extractFromQueue(queueItem) {
 			if(functions[cQ.commandMap[command[0]]] !== undefined) {
 				functions[cQ.commandMap[command[0]]](user, userID, channelID, voiceChannelID, message, event, command, cQ);
 			} else {
-				functions.doBotType(channelID, "That is not a valid command.")
+				functions.doBotType(channelID, "That is not a valid command.");
 			}
 		} catch (e) {
 			console.log("Error finding function associated to command %s. \n%s ", command[0], e);
@@ -422,6 +422,27 @@ var BotFunctions = function () {
 			to: channelID,
 			message: messageToType
 		});
+	};
+
+	// Do Trump
+	listOfFunctions.doTrump = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
+		var randomInt = Math.floor(Math.random()*9);
+		util.joinChannelPlayAudioAndLeave(voiceChannelID, 'audio/trump/'+randomInt+'.mp3', cQ);
+	};
+
+	// Do Trump Tweet
+	listOfFunctions.doTrumpTweet = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
+		latestTweets('realDonaldTrump', function (err, tweets) {
+		  var result = Math.floor(Math.random()*tweets.length);
+		  var tweetContent = tweets[result].content;
+			listOfFunctions.doBotType(channelID, tweetContent);
+		});
+	};
+
+	// Do Rave
+	listOfFunctions.doRave = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
+		var randomInt = Math.floor(Math.random()*5);
+		util.joinChannelPlayAudioAndLeave(voiceChannelID, 'audio/rave/'+randomInt+'.mp3', cQ);
 	};
 
 	return listOfFunctions;
