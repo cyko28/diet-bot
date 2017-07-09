@@ -217,7 +217,7 @@ var BotUtil = function () {
 					setTimeout(function(){cQ.ready = true;},750);
 					return console.error(error);
 				}
-				
+
 				console.log('Bot Joined the Voice Channel %s', voiceChannel);
 
 				//Then get the audio context
@@ -406,14 +406,17 @@ var BotFunctions = function () {
 		}
 	};
 
+	// Do Join Channel
 	listOfFunctions.doJoinChannel = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		bot.joinVoiceChannel(voiceChannelID);
 	};
 
+	// Do leave Channel
 	listOfFunctions.doLeaveChannel = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		bot.leaveVoiceChannel(voiceChannelID);
 	};
-	
+
+	// Do Bot Type
 	listOfFunctions.doBotType = function(channelID, messageToType) {
 		bot.sendMessage({
 			to: channelID,
