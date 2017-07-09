@@ -49,7 +49,7 @@ bot.on('ready', function(event) {
 			name:"Bigly Wigly"
 		}
 	});
-	
+
   cQ.addCommand('!help','doHelpInfo');
   cQ.addCommand(['!b','!buttlord'],'doButtlord');
   cQ.addCommand(['!a','!airhorn','!audio'],'doAirhorn');
@@ -94,14 +94,15 @@ function extractFromQueue(queueItem) {
 	var channelID = queueItem.channelID;
 	var message = queueItem.message;
 	var event = queueItem.event;
-	
+  var voiceChannelID = findUserChannel(userID, channelList);
+
 	var functions = BotFunctions();
-	
+
 	var command = parseCommand(message);
 	if(command != null && command.length > 0) {
 		try {
-			functions[cQ.commandMap[command[0]]](user, userID, channelID, message, event, command, cQ);
-		}catch (e) {
+      functions[cQ.commandMap[command[0]]](user, userID, channelID, voiceChannelID, message, event, command, cQ);
+		} catch (e) {
 			console.log("Could not find function for " + command[0] + "\n"+e);
 		}
 
@@ -155,6 +156,7 @@ var BotUtil = function () {
 				//Check to see if any errors happen while joining.
 				if (error) {
 					bot.leaveVoiceChannel(voiceChannel);
+          setTimeout(function(){cQ.ready = true;},750);
 					return console.error(error);
 				}
 
@@ -163,6 +165,7 @@ var BotUtil = function () {
 					//Once again, check to see if any errors exist
 					if (error) {
 						bot.leaveVoiceChannel(voiceChannel);
+            setTimeout(function(){cQ.ready = true;},750);
 						return console.error(error);
 					}
 
@@ -177,7 +180,7 @@ var BotUtil = function () {
 				});
 			});
 			} else if(err.code == 'ENOENT') {
-					// file does not exist
+        setTimeout(function(){cQ.ready = true;},750);
 			}
 		});
 	};
@@ -187,14 +190,16 @@ var BotUtil = function () {
 var BotFunctions = function () {
   var util = BotUtil();
 	var listOfFunctions = {};
-	listOfFunctions.doButtlord = function(user, userID, channelID, message, event, command, cQ) {
-	  var userVoiceChannel = findUserChannel(userID, channelList);
+  listOfFunctions.doButtlord = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		var randomInt = Math.floor(Math.random()*9);
 		if(randomInt >= 8) {
 		} else {
-			util.joinChannelPlayAudioAndLeave(userVoiceChannel, 'audio/buttlord.mp3', cQ);
+			util.joinChannelPlayAudioAndLeave(voiceChannelID, 'audio/buttlord.mp3', cQ);
 		}
+	};
+  listOfFunctions.doAirhorn = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
+    filePath = "audio/airhorn" + ((command[1] !== undefined)? "-" + command[1] : "") + ".mp3";
+  	util.joinChannelPlayAudioAndLeave(voiceChannelID, filePath, cQ);
 	};
 	return listOfFunctions;
 }
-
