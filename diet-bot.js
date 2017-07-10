@@ -56,7 +56,7 @@ bot.on('ready', function(event) {
 	cQ.addCommand(['!a','!airhorn','!audio'],'doAirhorn');
 	cQ.addCommand(['!s','!say'],'doSay');
 	cQ.addCommand(['!j','!join'],'doJoinChannel');
-	cQ.addCommand(['!k','!kick'],'doLeaveChannel');
+	cQ.addCommand(['!k','!kick','!kill'],'doLeaveChannel');
 	cQ.addCommand(['!i','!insult'],'doInsult');
 	cQ.addCommand(['!r','!rave'],'doRave');
 	cQ.addCommand(['!t','!trump'],'doTrump');
