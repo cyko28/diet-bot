@@ -3,7 +3,7 @@
 ## Next (for 1.0)
 - Instant kick for !k & !kick commands, no queue
 - long say commands are killing the bot...
-  - ```
+  ```js
   events.js:182
         throw er; // Unhandled 'error' event
         ^
