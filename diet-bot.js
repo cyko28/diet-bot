@@ -319,7 +319,10 @@ var BotFunctions = function () {
 	// Do Buttlord
 	listOfFunctions.doButtlord = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		var randomInt = Math.floor(Math.random()*9);
-		if(randomInt >= 8) {
+		if(randomInt == 0) {
+			var buttlordChooser = Math.floor(Math.random()*3); // x times buttlord flavor count
+			var filePath = 'audio/buttlord-' + parseInt(buttlordChooser) + '.mp3';
+			util.joinChannelPlayAudioAndLeave(voiceChannelID, filePath + '', cQ);
 		} else {
 			util.joinChannelPlayAudioAndLeave(voiceChannelID, 'audio/buttlord.mp3', cQ);
 		}
