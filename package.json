@@ -2,8 +2,19 @@
   "name": "diet-bot",
   "version": "1.0.0",
   "description": "A bot for the Diet Clan Discord",
-  "main": "bot-catcher.js",
-  "dependencies": {},
+  "main": "diet-bot.js",
+  "dependencies": {
+    "chalk": "^2.0.1",
+    "discord.io": "^2.5.1",
+    "fs": "0.0.1-security",
+    "google-tts-api": "0.0.1",
+    "http": "0.0.0",
+    "https": "^1.0.0",
+    "latest-tweets": "^1.0.3",
+    "path": "^0.12.7",
+    "request": "^2.81.0",
+    "url": "^0.11.0"
+  },
   "devDependencies": {
     "chalk": "^2.0.1",
     "discord.io": "^2.5.1",
