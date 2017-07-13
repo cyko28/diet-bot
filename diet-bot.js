@@ -177,7 +177,7 @@ function downloadFile (url, dest) {
 			}
 
 			const file = fs.createWriteStream(dest);
-			file.on('finish', function() {
+			file.on('finish', function() { //TODO Perhaps this has to do with tts crash
 				// close() is async, call resolve after close completes.
 				file.close(resolve);
 			});
@@ -260,7 +260,7 @@ var BotUtil = function () {
 				if(soundToPlayFollowingText != null) {
 				fs.createReadStream(soundToPlayFollowingText).pipe(stream, {end: false});
 				}
-			}, 500);
+			}, 1000); //TODO This is causing the crash on tts stuff
 		})
 		.catch(function (err) {
 			console.error(err.stack);
