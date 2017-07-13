@@ -35,6 +35,9 @@
     "type": "git",
     "url": "git+https://github.com/sc0ttr0berts0n/diet-bot.git"
   },
+  "engines": {
+    "node": "8.1.3"
+  },
   "author": "",
   "license": "ISC",
   "bugs": {
