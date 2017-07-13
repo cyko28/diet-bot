@@ -17,7 +17,7 @@ var bot = new Discord.Client({
 });
 
 // Pretty ASCII boot screen
-fs.readFile('dietbot-ascii.txt', 'utf8', function(err, data) {console.log(data);});
+fs.readFile('ASCII/dietbot-banner.txt', 'utf8', function(err, data) {console.log(data);});
 
 // Init Command Queue Object
 var cQ = {
@@ -319,14 +319,14 @@ var BotFunctions = function () {
 
 	// Do Buttlord
 	listOfFunctions.doButtlord = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
-		var randomInt = Math.floor(Math.random()*9);
+		var randomInt = Math.floor(Math.random()*7);
 		console.log('randomInt: %s', randomInt);
 		if(randomInt == 0) {
 			var buttlordChooser = Math.floor(Math.random()*3); // x times buttlord flavor count
-			var filePath = 'audio/buttlord-' + parseInt(buttlordChooser) + '.mp3';
+			var filePath = 'audio/buttlord/buttlord-' + parseInt(buttlordChooser) + '.mp3';
 			util.joinChannelPlayAudioAndLeave(voiceChannelID, filePath + '', cQ);
 		} else {
-			util.joinChannelPlayAudioAndLeave(voiceChannelID, 'audio/buttlord.mp3', cQ);
+			util.joinChannelPlayAudioAndLeave(voiceChannelID, 'audio/buttlord/buttlord.mp3', cQ);
 		}
 	};
 

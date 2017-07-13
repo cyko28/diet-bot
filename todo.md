@@ -17,6 +17,7 @@
 - pass CQ object instead of children
 - Sub out breathing underwater for solah eclipsez
 - Haunted bot 1% chance (retrofro) [yoggsaron whispers 25% speed]
+- !sayto function that finds users channel
 
 ## Someday
 - solve the awodjon problem
