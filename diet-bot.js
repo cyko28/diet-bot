@@ -149,9 +149,10 @@ function parseCommand(string) {
 				} else {
 					theArray[c++] += " " + string[i];
 				}
-				//rebuild string
 			}
 		}
+		// Ensure command[0] is lower case
+		theArray[0] = theArray[0].toLowerCase();
 		return(theArray);
 	}
 }
@@ -319,6 +320,7 @@ var BotFunctions = function () {
 	// Do Buttlord
 	listOfFunctions.doButtlord = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
 		var randomInt = Math.floor(Math.random()*9);
+		console.log('randomInt: %s', randomInt);
 		if(randomInt == 0) {
 			var buttlordChooser = Math.floor(Math.random()*3); // x times buttlord flavor count
 			var filePath = 'audio/buttlord-' + parseInt(buttlordChooser) + '.mp3';
