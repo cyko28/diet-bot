@@ -2,6 +2,7 @@
 logs
 *.log
 npm-debug.log*
+api.key
 
 # Runtime data
 pids
