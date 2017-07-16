@@ -254,44 +254,21 @@ var BotUtil = function () {
 	var listOfFunctions = {};
 	listOfFunctions.joinChannelPlayAudio = function(voiceChannel, audioFileLocation, cQ) {
 		cQ.ready = false;
-		fs.stat(audioFileLocation, function(err, stat) {
-			if (err == null) {
-				if(voiceChannel !== currentBotVoiceChannel) {
-					//Let's join the voice channel, the ID is whatever your voice channel's ID is.
-					bot.joinVoiceChannel(voiceChannel, function(error, events) {
-						currentBotVoiceChannel = voiceChannel;
-						//Check to see if any errors happen while joining.
-						if (error) {
-							bot.leaveVoiceChannel(voiceChannel);
-							currentBotVoiceChannel = "";
-							setTimeout(function(){cQ.ready = true;},750);
-							return console.error(error);
-						}
+		try {
+			if(voiceChannel !== currentBotVoiceChannel) {
+				//Let's join the voice channel, the ID is whatever your voice channel's ID is.
+				bot.joinVoiceChannel(voiceChannel, function(error, events) {
+					currentBotVoiceChannel = voiceChannel;
+					//Check to see if any errors happen while joining.
+					if (error) {
+						bot.leaveVoiceChannel(voiceChannel);
+						currentBotVoiceChannel = "";
+						setTimeout(function(){cQ.ready = true;},750);
+						return console.error(error);
+					}
 
-						console.log('Bot Joined the Voice Channel %s', voiceChannel);
+					console.log('Bot Joined the Voice Channel %s', voiceChannel);
 
-						//Then get the audio context
-						bot.getAudioContext(voiceChannel, function(error, stream) {
-							//Once again, check to see if any errors exist
-							if (error) {
-								bot.leaveVoiceChannel(voiceChannel);
-								currentBotVoiceChannel = "";
-								setTimeout(function(){cQ.ready = true;},750);
-								return console.error(error);
-							}
-
-							var combStream = combinedStream.create();
-							combStream.append(fs.createReadStream(audioFileLocation));
-							combStream.append(fs.createReadStream('audio/util/silence.mp3'));
-							combStream.pipe(stream, {end: false});
-
-							//The stream fires `done` when it's got nothing else to send to Discord.
-							stream.on('done', function() {
-								setTimeout(function(){cQ.ready = true;},750);
-							});
-						});
-					});
-				} else {
 					//Then get the audio context
 					bot.getAudioContext(voiceChannel, function(error, stream) {
 						//Once again, check to see if any errors exist
@@ -303,8 +280,15 @@ var BotUtil = function () {
 						}
 
 						var combStream = combinedStream.create();
-						combStream.append(fs.createReadStream(audioFileLocation));
-						combStream.append(fs.createReadStream('audio/util/silence.mp3'));
+						if (typeof audioFileLocation === 'object') {
+							for(var i=0; i<audioFileLocation.length; i++) {
+								combStream.append(fs.createReadStream(audioFileLocation[i]));
+							}
+							combStream.append(fs.createReadStream('audio/util/silence.mp3'));
+						} else {
+							combStream.append(fs.createReadStream(audioFileLocation));
+							combStream.append(fs.createReadStream('audio/util/silence.mp3'));
+						}
 						combStream.pipe(stream, {end: false});
 
 						//The stream fires `done` when it's got nothing else to send to Discord.
@@ -312,12 +296,39 @@ var BotUtil = function () {
 							setTimeout(function(){cQ.ready = true;},750);
 						});
 					});
-				}
-			} else if(err.code == 'ENOENT') {
-				currentBotVoiceChannel = "";
-				setTimeout(function(){cQ.ready = true;},750);
+				});
+			} else {
+				//Then get the audio context
+				bot.getAudioContext(voiceChannel, function(error, stream) {
+					//Once again, check to see if any errors exist
+					if (error) {
+						bot.leaveVoiceChannel(voiceChannel);
+						currentBotVoiceChannel = "";
+						setTimeout(function(){cQ.ready = true;},750);
+						return console.error(error);
+					}
+
+					var combStream = combinedStream.create();
+					if (typeof audioFileLocation === 'object') {
+						for(var i=0; i<audioFileLocation.length; i++) {
+							combStream.append(fs.createReadStream(audioFileLocation[i]));
+						}
+						combStream.append(fs.createReadStream('audio/util/silence.mp3'));
+					} else {
+						combStream.append(fs.createReadStream(audioFileLocation));
+						combStream.append(fs.createReadStream('audio/util/silence.mp3'));
+					}
+					combStream.pipe(stream, {end: false});
+
+					//The stream fires `done` when it's got nothing else to send to Discord.
+					stream.on('done', function() {
+						setTimeout(function(){cQ.ready = true;},750);
+					});
+				});
 			}
-		});
+		} catch (e) {
+			setTimeout(function(){cQ.ready = true;},750);
+		}
 	};
 
 	listOfFunctions.speakToStream = function(text, stream, voiceChannel, soundToPlayFollowingText) {
@@ -595,9 +606,15 @@ var BotFunctions = function () {
 				listOfFunctions.doBotType(channelID, textToSay);
 			}
 		} else if(command.length > 1) {
+			var filePathList = [];
 			for(var g=1; g<command.length; g++) {
-				var message = String("!hidden-t " + command[g]);
-				cQ.queue.push({user, userID, channelID, message, event});
+				if(superTrumpMap[command[g]] !== undefined) {
+					filePathList.push('audio/trump/'+superTrumpMap[command[g]]);
+				}
+			}
+
+			if(filePathList.length > 0) {
+				util.joinChannelPlayAudio(voiceChannelID, filePathList, cQ);
 			}
 		} else {
 			var randomInt = Math.floor(Math.random()*superTrumpMap.length);
