@@ -3,6 +3,7 @@
 ## Next (For 1.0)
 - Instant kick for !k & !kick commands, no queue
 - Attached cQ.ready states to voicechannel leave and join
+- trump/fiat.jpg file too short... crashing
 
 ## Soon
 - make rave, and trump work like !i where it can search for a string match
