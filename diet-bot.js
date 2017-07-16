@@ -594,9 +594,8 @@ var BotFunctions = function () {
 				var trumpFileName = superTrumpMap[i].charAt(0).toUpperCase() + superTrumpMap[i].slice(1);
 				textToSay = textToSay + i + " - " + replaceAll(trumpFileName, '_' ,' ').replace(".mp3", "") + "\n";
 				numCommandsInMessage++;
-				if(numCommandsInMessage == maxCommandsToSayPerMessage) {
+				if(numCommandsInMessage % maxCommandsToSayPerMessage == 0) {
 					listOfFunctions.doBotType(channelID, textToSay);
-					numCommandsInMessage = 0;
 					textToSay = "";
 				}
 			}
