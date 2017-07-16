@@ -74,7 +74,6 @@ bot.on('ready', function(event) {
 	cQ.addCommand(['!k','!kick','!kill'],'doLeaveChannel');
 	cQ.addCommand(['!i','!insult'],'doInsult');
 	cQ.addCommand(['!r','!rave'],'doRave');
-	cQ.addCommand(['!hidden-t'],'doTrump');		// Helper command to play multiple trump clips
 	cQ.addCommand(['!tt','!trumptweet'], 'doTrumpTweet');
 	cQ.addCommand(['!t','!trump'], 'doSuperTrump');
 
@@ -448,12 +447,26 @@ var BotFunctions = function () {
 
 	// Do Say
 	listOfFunctions.doSay = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
-		var whatToSay = "";
-		for(var i=1; i<command.length; i++) {
-			whatToSay+=command[i] + " ";
+		if(command.length > 1) {
+			var userInput = "";
+			for(var h = 1; h < command.length; h++) {
+				userInput = userInput + command[h].toLowerCase() + " ";
+			}
+
+			var textToSay = "";
+			for(var i = 0; i<superTrumpMap.length; i++) {
+				var trumpFileName = superTrumpMap[i].charAt(0).toUpperCase() + superTrumpMap[i].slice(1);
+				trumpFileName = replaceAll(trumpFileName, '_' ,' ').replace(".mp3", "");
+				if(trumpFileName.toLowerCase().trim() == userInput.trim()) {
+					util.joinChannelPlayAudio(voiceChannelID, 'audio/trump/'+superTrumpMap[i], cQ);
+					return;
+				}
+			}
+
+			// If no trump found, go back to regular say
+			util.joinChannelAndSay(voiceChannelID, userInput, null, cQ);
+			console.log(chalk.magenta('[Command]') + ' Saying \'' + userInput + '\n');
 		}
-		util.joinChannelAndSay(voiceChannelID, whatToSay, null, cQ);
-		console.log(chalk.magenta('[Command]') + ' Saying \'' + whatToSay + '\n')
 	};
 
 	// Join Channel and Insult (private, only used by BotFunctions)
@@ -550,24 +563,6 @@ var BotFunctions = function () {
 		});
 		console.log(chalk.magenta('[Command]') + " Bot Typed: " + messageToType);
 	};
-
-	// Do Trump
-	listOfFunctions.doTrump = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
-		var randomInt;
-		if(command[1] !== undefined) {
-			randomInt = parseInt(command[1]);
-		}
-
-		if(randomInt == undefined || randomInt > superTrumpMap.length - 1) {
-			randomInt = Math.floor(Math.random()*superTrumpMap.length);
-		}
-
-		if(superTrumpMap[randomInt] !== undefined) {
-			util.joinChannelPlayAudio(voiceChannelID, 'audio/trump/'+superTrumpMap[randomInt], cQ);
-			console.log(chalk.magenta('[Command]') + " Playing Trump Clip: " + 'audio/trump/'+superTrumpMap[randomInt]);
-		}
-	};
-
 
 	// Do Trump Tweet
 	listOfFunctions.doTrumpTweet = function(user, userID, channelID, voiceChannelID, message, event, command, cQ) {
