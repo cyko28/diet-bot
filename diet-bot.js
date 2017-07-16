@@ -612,7 +612,7 @@ var BotFunctions = function () {
 			var filePathList = [];
 			for(var g=1; g<command.length; g++) {
 				if(superTrumpMap[command[g]] !== undefined) {
-					filePathList.push('audio/trump/'+superTrumpMap[command[g]]);
+					filePathList.push('audio/trump/'+superTrumpMap[command[g]]+ '.mp3');
 				}
 			}
 
