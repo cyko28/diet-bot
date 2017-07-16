@@ -286,6 +286,7 @@ var BotUtil = function () {
 							}
 							combStream.append(fs.createReadStream('audio/util/silence.mp3'));
 						} else {
+							console.log(audioFileLocation);
 							combStream.append(fs.createReadStream(audioFileLocation));
 							combStream.append(fs.createReadStream('audio/util/silence.mp3'));
 						}
@@ -461,7 +462,7 @@ var BotFunctions = function () {
 				if(trumpConfidence.rating >= 0.58) {
 					util.joinChannelPlayAudio(voiceChannelID, 'audio/trump/'+trumpConfidence.target+".mp3", cQ);
 					console.log(chalk.magenta('[Saying As Trump]') + ' Saying \'' + userInput + '\'');
-					console.log(chalk.magenta('[Trump Certainty]') + trumpConfidence.rating.toFixed(2) * 100 + '%');
+					console.log(chalk.magenta('[Trump Certainty] ') + trumpConfidence.rating.toFixed(2) * 100 + '%');
 					return;
 				}
 			}
@@ -620,8 +621,8 @@ var BotFunctions = function () {
 			}
 		} else {
 			var randomInt = Math.floor(Math.random()*superTrumpMap.length);
-			util.joinChannelPlayAudio(voiceChannelID, 'audio/trump/'+superTrumpMap[randomInt], cQ);
-			console.log(chalk.magenta('[Command]') + " Playing Trump Clip: " + 'audio/trump/'+superTrumpMap[randomInt]);
+			util.joinChannelPlayAudio(voiceChannelID, 'audio/trump/'+superTrumpMap[randomInt] + '.mp3', cQ);
+			console.log(chalk.magenta('[Command]') + " Playing Trump Clip: " + 'audio/trump/'+superTrumpMap[randomInt] + '.mp3');
 		}
 	};
 
