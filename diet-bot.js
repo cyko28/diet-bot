@@ -600,7 +600,7 @@ var BotFunctions = function () {
 				}
 			}
 
-			if(numCommandsInMessage > 0) {
+			if(numCommandsInMessage % maxCommandsToSayPerMessage != 0) {
 				listOfFunctions.doBotType(channelID, textToSay);
 			}
 		} else if(command.length > 1) {
