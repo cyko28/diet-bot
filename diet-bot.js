@@ -11,6 +11,7 @@ var googleTTS = require('google-tts-api');
 var urlParse	= require('url').parse;
 var latestTweets = require('latest-tweets');
 var combinedStream = require('combined-stream');
+var stringSimilarity = require('string-similarity');
 
 var bot = new Discord.Client({
 	autorun: true,
@@ -107,7 +108,7 @@ function buildSuperTrumpMap() {
 	  files.forEach(file => {
 			if(file.endsWith(".mp3")) {
 			  try {
-					superTrumpMap[counter] = file;
+					superTrumpMap[counter] = file.split('.mp3',1)[0];
 					counter++;
 			  } catch(err) {}
 			}
@@ -331,7 +332,7 @@ var BotUtil = function () {
 	};
 
 	listOfFunctions.speakToStream = function(text, stream, voiceChannel, soundToPlayFollowingText) {
-		var fileName = "audio/" + new Date().getTime() + ".mp3";	// Generate a unique file name
+		var fileName = "audio/text-to-speech/" + new Date().getTime() + ".mp3";	// Generate a unique file name
 		var dest = path.resolve(__dirname, fileName); // file destination
 
 		googleTTS(text, 'En-gb', 0.9)	 // speed normal = 1 (default), slow = 0.24. Create the URL via Google TTS API
@@ -452,20 +453,23 @@ var BotFunctions = function () {
 			for(var h = 1; h < command.length; h++) {
 				userInput = userInput + command[h].toLowerCase() + " ";
 			}
+			var trumpConfidence = stringSimilarity.findBestMatch(message, superTrumpMap).bestMatch;
 
 			for(var i = 0; i<superTrumpMap.length; i++) {
 				var trumpFileName = superTrumpMap[i].charAt(0).toUpperCase() + superTrumpMap[i].slice(1);
-				trumpFileName = replaceAll(trumpFileName, '_' ,' ').replace(".mp3", "");
-				if(trumpFileName.toLowerCase().trim() == userInput.trim()) {
-					util.joinChannelPlayAudio(voiceChannelID, 'audio/trump/'+superTrumpMap[i], cQ);
-					console.log(chalk.magenta('[As Trump]') + ' Saying \'' + userInput + '\n');
+				trumpFileName = replaceAll(trumpFileName, '_' ,' ');
+				if(trumpConfidence.rating >= 0.58) {
+					util.joinChannelPlayAudio(voiceChannelID, 'audio/trump/'+trumpConfidence.target+".mp3", cQ);
+					console.log(chalk.magenta('[Saying As Trump]') + ' Saying \'' + userInput + '\'');
+					console.log(chalk.magenta('[Trump Certainty]') + trumpConfidence.rating.toFixed(2) * 100 + '%');
 					return;
 				}
 			}
 
 			// If no trump found, go back to regular say
 			util.joinChannelAndSay(voiceChannelID, userInput, null, cQ);
-			console.log(chalk.magenta('[Command]') + ' Saying \'' + userInput + '\n');
+			console.log(chalk.magenta('[Saying As Bot]') + ' Saying \'' + userInput + '\'');
+			console.log(chalk.magenta('[Trump Certainty]') + trumpConfidence.rating.toFixed(1) * 100 + '%');
 		}
 	};
 
