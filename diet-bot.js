@@ -453,12 +453,12 @@ var BotFunctions = function () {
 				userInput = userInput + command[h].toLowerCase() + " ";
 			}
 
-			var textToSay = "";
 			for(var i = 0; i<superTrumpMap.length; i++) {
 				var trumpFileName = superTrumpMap[i].charAt(0).toUpperCase() + superTrumpMap[i].slice(1);
 				trumpFileName = replaceAll(trumpFileName, '_' ,' ').replace(".mp3", "");
 				if(trumpFileName.toLowerCase().trim() == userInput.trim()) {
 					util.joinChannelPlayAudio(voiceChannelID, 'audio/trump/'+superTrumpMap[i], cQ);
+					console.log(chalk.magenta('[As Trump]') + ' Saying \'' + userInput + '\n');
 					return;
 				}
 			}
