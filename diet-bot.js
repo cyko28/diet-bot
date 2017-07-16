@@ -557,6 +557,10 @@ var BotFunctions = function () {
 
 	// Do Bot Type
 	listOfFunctions.doBotType = function(channelID, messageToType) {
+		// Wrap in tick marks to show as monospace
+		messageToType = '\`\`\`js\n' + messageToType + '\n\`\`\`';
+
+		// Send that shit
 		bot.sendMessage({
 			to: channelID,
 			message: messageToType
