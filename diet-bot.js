@@ -63,7 +63,7 @@ bot.on('ready', function(event) {
 
 	this.setPresence({
 		game:{
-			name:"Bigly Wigly"
+			name:"With Itself"
 		}
 	});
 
