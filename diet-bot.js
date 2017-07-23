@@ -282,14 +282,22 @@ var BotUtil = function () {
 						var combStream = combinedStream.create();
 						if (typeof audioFileLocation === 'object') {
 							for(var i=0; i<audioFileLocation.length; i++) {
-								combStream.append(fs.createReadStream(audioFileLocation[i]));
+								fs.stat(audioFileLocation[i], function(err, stat) {
+									if(err == null) {
+										combStream.append(fs.createReadStream(audioFileLocation[i]));
+									}
+								});
 							}
 							combStream.append(fs.createReadStream('audio/util/silence.mp3'));
 						} else {
-							console.log(audioFileLocation);
-							combStream.append(fs.createReadStream(audioFileLocation));
+							fs.stat(audioFileLocation, function(err, stat) {
+								if(err == null) {
+									combStream.append(fs.createReadStream(audioFileLocation));
+								}
+							});
 							combStream.append(fs.createReadStream('audio/util/silence.mp3'));
 						}
+
 						combStream.pipe(stream, {end: false});
 
 						//The stream fires `done` when it's got nothing else to send to Discord.
@@ -312,13 +320,22 @@ var BotUtil = function () {
 					var combStream = combinedStream.create();
 					if (typeof audioFileLocation === 'object') {
 						for(var i=0; i<audioFileLocation.length; i++) {
-							combStream.append(fs.createReadStream(audioFileLocation[i]));
+							fs.stat(audioFileLocation[i], function(err, stat) {
+								if(err == null) {
+									combStream.append(fs.createReadStream(audioFileLocation[i]));
+								}
+							});
 						}
 						combStream.append(fs.createReadStream('audio/util/silence.mp3'));
 					} else {
-						combStream.append(fs.createReadStream(audioFileLocation));
+						fs.stat(audioFileLocation, function(err, stat) {
+							if(err == null) {
+								combStream.append(fs.createReadStream(audioFileLocation));
+							}
+						});
 						combStream.append(fs.createReadStream('audio/util/silence.mp3'));
 					}
+
 					combStream.pipe(stream, {end: false});
 
 					//The stream fires `done` when it's got nothing else to send to Discord.
