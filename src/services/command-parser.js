@@ -5,9 +5,8 @@ class CommandParser {
     }
 
     handle(message) {
-        if (!this.validate(message)) return;
-        const cmd = this.tokenize(message);
-        this.runner.run(message, cmd.instruction, cmd.params);
+        if (!this.validate(message)) return false;
+        return this.tokenize(message);
     }
     validate(message) {
         if (message.content.split('')[0] !== '!') return false;

@@ -40,3 +40,4 @@ jspm_packages
 
 # ingore the env file
 .env
+yarn-error.log

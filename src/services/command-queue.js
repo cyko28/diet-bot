@@ -1,22 +1,43 @@
 class CommandQueue {
-    constructor() {
-        this.queue = [];
+    constructor(runner, bot) {
+        this.runner = runner;
+        this.buffer = [];
         this.active = false;
+        this.bot = bot;
     }
 
-    add(cmd) {
-        this.queue.push(cmd);
+    add(message, instruction, params) {
+        const cmd = {
+            message: message,
+            instruction: instruction,
+            params: params
+        };
+        this.buffer.push(cmd);
+        this.fetch();
     }
 
     fetch() {
         // TODO: confirm it is ready to run
-        if (this.queue.length < 1) {
+        if (this.buffer.length < 1) {
             console.info('Command Queue is empty..');
             return;
         }
-        return this.queue.shift();
+        if (!this.active) {
+            let cmd = this.buffer.shift();
+            this.runner.run(cmd);
+        } else {
+            console.log('\nCommand Added');
+            console.log(`${this.buffer.length} commands in queue`);
+            this.checkBack();
+        }
     }
     checkBack(delay = 1000) {
-        setTimeout(() => (this.active ? checkBack() : fetch()), delay);
+        setTimeout(
+            () => (this.active ? this.checkBack() : this.fetch()),
+            delay
+        );
     }
+    isBotActive() {}
 }
+
+module.exports = CommandQueue;

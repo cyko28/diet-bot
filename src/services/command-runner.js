@@ -37,11 +37,15 @@ class CommandRunner {
         // register the commands
         this.addCommands(instance.commands, name);
     }
-    run(message, command, params) {
-        const plugin = this.commands.get(command);
-        console.log(chalk.blue('[' + plugin + ']'));
-        console.log('Params: ' + params);
-        this.plugins.get(plugin).run(message, params);
+    run(cmd) {
+        const plugin = this.commands.get(cmd.instruction);
+        console.log('\n' + chalk.blue('[' + plugin + ']'));
+        if (cmd.params.length >= 1) {
+            console.log('Params: ' + cmd.params);
+        }
+        if (plugin) {
+            this.plugins.get(plugin).run(cmd.message, cmd.params);
+        }
     }
 }
 

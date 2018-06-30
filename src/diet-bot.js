@@ -1,25 +1,37 @@
 require('dotenv').config();
 
 const Discord = require('discord.js');
-const diet = new Discord.Client();
+const bot = new Discord.Client();
 
-const CommandRunner = require('./services/command-runner.js');
-const command = new CommandRunner({ path: './src/plugins/' });
+const Command = require('./services/command.js');
+const command = new Command(bot);
 
 const CommandParser = require('./services/command-parser');
 const commandParser = new CommandParser(command);
 
-diet.login(process.env.API_KEY);
+bot.login(process.env.API_KEY);
 
-diet.on('ready', () => init());
+bot.on('ready', () => init());
 
-diet.on('message', message => commandParser.handle(message));
+bot.on('message', message => command.handle(message));
+
+bot.on('voiceStateUpdate', (before, after) => {
+    if (before.displayName === 'diet-bot') {
+        if (before.voiceChannel === undefined) {
+            command.queue.active = true;
+        } else {
+            setTimeout(() => {
+                command.queue.active = false;
+            }, 500);
+        }
+    }
+});
 
 const init = () => {
-    console.log(`Logged in as ${diet.user.tag}!`);
+    console.log(`Logged in as ${bot.user.tag}!`);
     // TODO: make add plugins take an array
-    command.addPlugins('airhorn');
-    command.addPlugins('rave');
-    command.addPlugins('buttlord');
-    command.addPlugins('trump');
+    command.runner.addPlugins('airhorn');
+    command.runner.addPlugins('rave');
+    command.runner.addPlugins('buttlord');
+    command.runner.addPlugins('trump');
 };
