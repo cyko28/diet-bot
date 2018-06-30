@@ -1,33 +1,26 @@
 {
-  "name": "diet-bot",
-  "version": "1.0.0",
-  "description": "A bot for the Diet Clan Discord",
-  "main": "bot-stable.js",
-  "dependencies": {
-    "discord.io": "^2.4.2",
-    "es6-promise": "^4.0.5",
-    "fs": "^0.0.1-security",
-    "google-tts-api": "^0.0.1",
-    "unirest": "^0.5.1",
-    "youtube-dl": "^1.11.1"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "!a"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cyko28/diet-bot.git"
-  },
-  "keywords": [
-    "diet",
-    "clan",
-    "bot"
-  ],
-  "author": "Scott Robertson",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/cyko28/diet-bot/issues"
-  },
-  "homepage": "https://github.com/cyko28/diet-bot#readme"
+    "name": "diet-bot",
+    "version": "2.0.0",
+    "description": "diet bot rides again",
+    "main": "index.js",
+    "repository": "https://github.com/sc0ttr0berts0n/diet-bot.git",
+    "author": "Scott Robertson <scott.t.robertson@gmail.com>",
+    "license": "MIT",
+    "dependencies": {
+        "chalk": "^2.4.1",
+        "discord.js": "^11.3.2",
+        "dotenv": "^6.0.0",
+        "ffmpeg-binaries": "^3.2.2-3",
+        "fs": "^0.0.1-security",
+        "fs-extra": "^6.0.1",
+        "opusscript": "^0.0.6"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node ./src/diet-bot.js",
+        "debug": "nodemon --inspect ./src/diet-bot.js"
+    },
+    "devDependencies": {
+        "nodemon": "^1.17.5"
+    }
 }

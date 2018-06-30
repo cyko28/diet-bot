@@ -2,6 +2,8 @@
 logs
 *.log
 npm-debug.log*
+api.key
+audio/text-to-speech/**
 
 # Runtime data
 pids
@@ -35,3 +37,6 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+# ingore the env file
+.env
