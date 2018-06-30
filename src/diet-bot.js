@@ -3,13 +3,19 @@ require('dotenv').config();
 const Discord = require('discord.js');
 const diet = new Discord.Client();
 
-const Airhorn = require('./commands/airhorn/airhorn');
-const airhorn = new Airhorn();
+const CommandRunner = require('./services/command-runner.js');
+const command = new CommandRunner({ path: './src/plugins/' });
+
+const CommandParser = require('./services/command-parser');
+const commandParser = new CommandParser(command);
 
 diet.login(process.env.API_KEY);
 
-diet.on('ready', () => {
-    console.log(`Logged in as ${diet.user.tag}!`);
-});
+diet.on('ready', () => init());
 
-diet.on('message', message => airhorn.playAirhorn(message));
+diet.on('message', message => commandParser.handle(message));
+
+const init = () => {
+    console.log(`Logged in as ${diet.user.tag}!`);
+    command.addPlugins('airhorn');
+};
