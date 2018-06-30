@@ -4,10 +4,12 @@ const path = require('path');
 class Rave {
     constructor() {
         this.commands = ['r', 'rave'];
-        this.soundFiles = [];
+        this.audioFiles = new Map();
     }
     init() {
-        this.findAudioFiles();
+        this.findAudioFiles().then(files => {
+            this.audioFiles = files;
+        });
     }
     run(message, params = []) {
         // Voice only works in guilds, if the message does not come from a guild,
@@ -19,7 +21,7 @@ class Rave {
             message.member.voiceChannel
                 .join()
                 .then(connection => {
-                    const intent = connection.playStream(this.playAudio());
+                    const intent = connection.playFile(this.playAudio());
                     intent.on('end', () => connection.disconnect());
                 })
                 .catch(console.error);
@@ -28,15 +30,11 @@ class Rave {
         }
     }
     findAudioFiles() {
-        fs.readdir(path.join(__dirname, 'audio'), (err, files) => {
-            this.soundFiles = files;
-        });
+        return fs.readdir(path.join(__dirname, 'audio'));
     }
     playAudio() {
-        const randomFile = this.soundFiles[
-            this.randomInt(this.soundFiles.length)
-        ];
-        return fs.createReadStream(path.join(__dirname, 'audio', randomFile));
+        const random = this.randomInt(this.audioFiles.length);
+        return path.join(__dirname, 'audio', this.audioFiles[random]);
     }
     randomInt(n) {
         return Math.floor(Math.random() * n);

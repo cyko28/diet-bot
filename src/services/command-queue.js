@@ -1,6 +1,7 @@
 class CommandQueue {
     constructor() {
         this.queue = [];
+        this.active = false;
     }
 
     add(cmd) {
@@ -14,5 +15,8 @@ class CommandQueue {
             return;
         }
         return this.queue.shift();
+    }
+    checkBack(delay = 1000) {
+        setTimeout(() => (this.active ? checkBack() : fetch()), delay);
     }
 }

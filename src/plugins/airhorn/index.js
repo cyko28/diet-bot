@@ -15,7 +15,7 @@ class Airhorn {
             message.member.voiceChannel
                 .join()
                 .then(connection => {
-                    const intent = connection.playStream(
+                    const intent = connection.playFile(
                         this.getAudio(params[0])
                     );
                     intent.on('end', () => connection.disconnect());
@@ -34,7 +34,7 @@ class Airhorn {
         if (!fs.existsSync(filepath)) {
             filepath = path.join(__dirname, 'audio', 'airhorn.mp3');
         }
-        return fs.createReadStream(filepath);
+        return filepath;
     }
 }
 

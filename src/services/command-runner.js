@@ -15,15 +15,26 @@ class CommandRunner {
     }
 
     addPlugins(name) {
-        console.log();
+        // require the path
         const Plugin = require(path.join(
             process.cwd(),
             this.pluginDirPath,
             name,
             'index.js'
         ));
+
+        // get a new instance of the plugin
         const instance = new Plugin();
+
+        // if the instance has an init function, run it
+        if (typeof instance.init == 'function') {
+            instance.init();
+        }
+
+        // insert the instance into the plugin map
         this.plugins.set(name, instance);
+
+        // register the commands
         this.addCommands(instance.commands, name);
     }
     run(message, command, params) {

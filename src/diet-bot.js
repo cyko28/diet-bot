@@ -17,5 +17,9 @@ diet.on('message', message => commandParser.handle(message));
 
 const init = () => {
     console.log(`Logged in as ${diet.user.tag}!`);
+    // TODO: make add plugins take an array
     command.addPlugins('airhorn');
+    command.addPlugins('rave');
+    command.addPlugins('buttlord');
+    command.addPlugins('trump');
 };
