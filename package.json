@@ -16,11 +16,12 @@
         "opusscript": "^0.0.6"
     },
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "jest test",
         "start": "node ./src/diet-bot.js",
         "debug": "nodemon --inspect ./src/diet-bot.js"
     },
     "devDependencies": {
+        "jest": "^23.3.0",
         "nodemon": "^1.17.5"
     }
 }
