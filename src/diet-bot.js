@@ -34,4 +34,5 @@ const init = () => {
     command.runner.addPlugins('rave');
     command.runner.addPlugins('buttlord');
     command.runner.addPlugins('trump');
+    command.runner.addPlugins('say');
 };

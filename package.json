@@ -7,6 +7,7 @@
     "author": "Scott Robertson <scott.t.robertson@gmail.com>",
     "license": "MIT",
     "dependencies": {
+        "@google-cloud/text-to-speech": "^0.2.0",
         "chalk": "^2.4.1",
         "discord.js": "^11.3.2",
         "dotenv": "^6.0.0",
