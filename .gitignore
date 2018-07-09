@@ -43,3 +43,5 @@ jspm_packages
 yarn-error.log
 
 Diet Bot-b0b0da68168d.json
+
+src/plugins/**/generated/*.mp3

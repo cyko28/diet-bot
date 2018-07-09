@@ -24,7 +24,7 @@ class TTS {
 
             // Write the binary audio content to a local file
             fs.writeFile(
-                './src/services/temp/audio/' + filename + '.mp3',
+                './src/plugins/say/generated/' + filename + '.mp3',
                 response.audioContent,
                 'binary',
                 err => {
@@ -45,7 +45,14 @@ class TTS {
         });
     }
     playAudio(filename) {
-        return path.join(__dirname, 'temp', 'audio', filename + '.mp3');
+        return path.join(
+            __dirname,
+            '../',
+            'plugins',
+            filename,
+            'generated',
+            filename + '.mp3'
+        );
     }
 }
 
