@@ -15,27 +15,35 @@ class CommandRunner {
     }
 
     addPlugins(name) {
-        // require the path
-        const Plugin = require(path.join(
-            process.cwd(),
-            this.pluginDirPath,
-            name,
-            'index.js'
-        ));
-
-        // get a new instance of the plugin
-        const instance = new Plugin();
-
-        // if the instance has an init function, run it
-        if (typeof instance.init == 'function') {
-            instance.init();
+        let nameArray = name;
+        if (!Array.isArray(nameArray)) {
+            nameArray = [nameArray];
+            nameArray.push(name);
         }
 
-        // insert the instance into the plugin map
-        this.plugins.set(name, instance);
+        nameArray.forEach(name => {
+            // require the path
+            const Plugin = require(path.join(
+                process.cwd(),
+                this.pluginDirPath,
+                name,
+                'index.js'
+            ));
 
-        // register the commands
-        this.addCommands(instance.commands, name);
+            // get a new instance of the plugin
+            const instance = new Plugin();
+
+            // if the instance has an init function, run it
+            if (typeof instance.init == 'function') {
+                instance.init();
+            }
+
+            // insert the instance into the plugin map
+            this.plugins.set(name, instance);
+
+            // register the commands
+            this.addCommands(instance.commands, name);
+        });
     }
     run(cmd) {
         const plugin = this.commands.get(cmd.instruction);

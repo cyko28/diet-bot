@@ -27,12 +27,8 @@ bot.on('channelUpdate', (before, after) => {
 
 const init = () => {
     console.log(`Logged in as ${bot.user.tag}!`);
-    // TODO: make add plugins take an array
-    command.runner.addPlugins('airhorn');
-    command.runner.addPlugins('rave');
-    command.runner.addPlugins('buttlord');
-    command.runner.addPlugins('trump');
-    command.runner.addPlugins('say');
+    const plugins = ['airhorn', 'rave', 'buttlord', 'trump', 'say'];
+    command.runner.addPlugins(plugins);
 };
 
 const handleVoiceStateUpdate = (before, after) => {
