@@ -79,5 +79,6 @@ const nefariousStatuses = () => {
     ];
     const activity = statuses[util.randomInt(statuses.length - 1)];
     bot.user.setActivity(activity);
+    console.log('\n[Bot Status]');
     console.log(`Bot Status Set to: "${activity}"`);
 };
