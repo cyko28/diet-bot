@@ -35,6 +35,7 @@ class Trump {
     }
     playAudio() {
         const random = util.randomInt(this.audioFiles.length);
+        console.log(`Playing File: "${this.audioFiles[random]}"`);
         return path.join(__dirname, 'audio', this.audioFiles[random]);
     }
 }
