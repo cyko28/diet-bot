@@ -1,7 +1,6 @@
 const Parser = require('./command-parser');
 const Queue = require('./command-queue');
 const Runner = require('./command-runner');
-
 class Command {
     constructor(bot) {
         this.parser = new Parser();
@@ -16,4 +15,8 @@ class Command {
     }
 }
 
-module.exports = Command;
+module.exports = {
+    getInstance: function(bot) {
+        return new Command(bot);
+    }
+};
