@@ -1,15 +1,15 @@
 require('dotenv').config();
 
-const util = require('./services/util.js').getInstance();
-
 const Discord = require('discord.js');
 const bot = new Discord.Client();
+
+let util = require('./services/util.js').getInstance(bot);
 
 const command = require('./services/command.js').getInstance(bot);
 
 bot.login(process.env.API_KEY);
 
-bot.on('ready', () => init());
+bot.on('ready', bot => init(bot));
 
 bot.on('message', message => command.handle(message));
 
@@ -32,6 +32,8 @@ const init = () => {
     console.log(`Logged in as ${bot.user.tag}!`);
     const plugins = ['airhorn', 'rave', 'buttlord', 'trump', 'say'];
     command.runner.addPlugins(plugins);
+    nefariousStatuses();
+    setInterval(nefariousStatuses, 60 * 1000);
 };
 
 const handleVoiceStateUpdate = (before, after) => {
@@ -47,5 +49,31 @@ const handleVoiceStateUpdate = (before, after) => {
 };
 
 const nefariousStatuses = () => {
-    const statuses = [];
+    const randomUser = util.randomUserDisplayName('Regulars');
+    const statuses = [
+        `Stealing ${randomUser}'s CC info`,
+        `Logging ${randomUser}'s bank password`,
+        `Screensharing ${randomUser}'s screen`,
+        `SWATing ${randomUser}`,
+        `Sending Pizzas to ${randomUser}`,
+        `Cutting ${randomUser}'s Ethernet Connection`,
+        `Submitting ${randomUser}'s Application to ISIS`,
+        `Firing Low Orbiting Ion Cannon at ${randomUser}`,
+        `Sicking Twitter Hate Mobs on ${randomUser}`,
+        `DDoSing ${randomUser}`,
+        `Impersonating ${randomUser}`,
+        `Swiping Left on ${randomUser}`,
+        `Swiping Right on ${randomUser}`,
+        `Catfishing ${randomUser}`,
+        `Finding ${randomUser}'s porn`,
+        `Drone Striking ${randomUser}`,
+        `Watching ${randomUser} masturbate`,
+        `Going to Flavortown`,
+        `Hanging With Satan`,
+        `Restarting Simulation`,
+        `Bagging Milk with Catcher`
+    ];
+    const game = statuses[util.randomInt(statuses.length - 1)];
+    bot.user.setGame(game);
+    console.log(`Bot Status Set to: "${game}"`);
 };
