@@ -15,6 +15,16 @@ bot.on('voiceStateUpdate', (before, after) =>
     handleVoiceStateUpdate(before, after)
 );
 
+bot.on('channelUpdate', (before, after) => {
+    // Anti Rudy Measures
+    if (after.name !== '🍆  General' && after.id === '169703393277902848') {
+        console.log('General Name Change Detected, Reverting in 5 mintes');
+        setTimeout(() => {
+            bot.channels.get(after.id).setName('🍆  General');
+        }, 5 * 60 * 1000);
+    }
+});
+
 const init = () => {
     console.log(`Logged in as ${bot.user.tag}!`);
     // TODO: make add plugins take an array
