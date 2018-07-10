@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
+const util = require('../../services/util').getInstance();
 
 class Trump {
     constructor() {
@@ -33,11 +34,8 @@ class Trump {
         return fs.readdir(path.join(__dirname, 'audio'));
     }
     playAudio() {
-        const random = this.randomInt(this.audioFiles.length);
+        const random = util.randomInt(this.audioFiles.length);
         return path.join(__dirname, 'audio', this.audioFiles[random]);
-    }
-    randomInt(n) {
-        return Math.floor(Math.random() * n);
     }
 }
 

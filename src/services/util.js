@@ -19,6 +19,10 @@ class Util {
 
         `;
     }
+
+    randomInt(n) {
+        return Math.floor(Math.random() * n);
+    }
 }
 
 module.exports = {

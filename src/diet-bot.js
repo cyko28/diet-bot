@@ -45,3 +45,7 @@ const handleVoiceStateUpdate = (before, after) => {
         }
     }
 };
+
+const nefariousStatuses = () => {
+    const statuses = [];
+};
