@@ -16,7 +16,5 @@ class Command {
 }
 
 module.exports = {
-    getInstance: function(bot) {
-        return new Command(bot);
-    }
+    getInstance: bot => new Command(bot)
 };

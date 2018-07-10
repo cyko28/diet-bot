@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const util = require('./services/util.js').getInstance();
+
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 
@@ -26,6 +28,7 @@ bot.on('channelUpdate', (before, after) => {
 });
 
 const init = () => {
+    console.log(util.bootBanner());
     console.log(`Logged in as ${bot.user.tag}!`);
     const plugins = ['airhorn', 'rave', 'buttlord', 'trump', 'say'];
     command.runner.addPlugins(plugins);
