@@ -20,9 +20,13 @@ bot.on('voiceStateUpdate', (before, after) =>
 bot.on('channelUpdate', (before, after) => {
     // Anti Rudy Measures
     if (after.name !== '🍆  General' && after.id === '169703393277902848') {
-        console.log('General Name Change Detected, Reverting in 5 mintes');
+        console.log(`General Name Change Detected
+${before.name} has become ${after.name}
+Reverting in 5 minutes`);
         setTimeout(() => {
-            bot.channels.get(after.id).setName('🍆  General');
+            const originalName = '🍆  General';
+            bot.channels.get(after.id).setName(originalName);
+            console.log(`General Name Restored to ${originalName}`);
         }, 5 * 60 * 1000);
     }
 });
@@ -73,7 +77,7 @@ const nefariousStatuses = () => {
         `Restarting Simulation`,
         `Bagging Milk with Catcher`
     ];
-    const game = statuses[util.randomInt(statuses.length - 1)];
-    bot.user.setGame(game);
-    console.log(`Bot Status Set to: "${game}"`);
+    const activity = statuses[util.randomInt(statuses.length - 1)];
+    bot.user.setActivity(activity);
+    console.log(`Bot Status Set to: "${activity}"`);
 };
