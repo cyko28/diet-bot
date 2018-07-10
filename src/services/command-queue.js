@@ -26,7 +26,7 @@ class CommandQueue {
             let cmd = this.buffer.shift();
             this.runner.run(cmd);
         } else {
-            console.log('\nCommand Added');
+            console.log('\n[Command Queue]\nCommand Added');
             console.log(`${this.buffer.length} commands in queue`);
             this.checkBack();
         }
