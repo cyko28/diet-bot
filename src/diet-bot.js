@@ -47,7 +47,7 @@ const handleVoiceStateUpdate = (before, after) => {
         } else {
             setTimeout(() => {
                 command.queue.active = false;
-            }, 500);
+            }, 1000);
         }
     }
 };
