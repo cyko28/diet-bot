@@ -3,7 +3,7 @@ const path = require('path');
 
 class Airhorn {
     constructor() {
-        this.commands = ['a', 'airhorn'];
+        this.commands = ['a', 'airhorn', 'audio'];
     }
     run(message, params = []) {
         // Voice only works in guilds, if the message does not come from a guild,
