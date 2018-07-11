@@ -63,6 +63,10 @@ class Util {
         const users = [...this.getUserList(targetRole).values()];
         return users[this.randomInt(users.length)].displayName;
     }
+    react(message, emojiString) {
+        const target = message.guild.emojis.find('name', emojiString);
+        message.react(target);
+    }
 }
 
 module.exports = {
