@@ -75,7 +75,17 @@ const nefariousStatuses = () => {
         `Going to Flavortown`,
         `Hanging With Satan`,
         `Restarting Simulation`,
-        `Bagging Milk with Catcher`
+        `Bagging Milk with Catcher`,
+        `Wire Tapping USER`,
+        `Selling ${randomUser}'s Personal Data for Profit`,
+        `Getting Comfy with the Russians`,
+        `Deleting ${randomUser}'s System 32 Files`,
+        `BSoDing ${randomUser}`,
+        `Triggering ${randomUser}`,
+        `Making a Wawa Run`,
+        `Hogtying ${randomUser}`,
+        `Spamming @${randomUser}`,
+        `Kidnapping ${randomUser}`
     ];
     const activity = statuses[util.randomInt(statuses.length - 1)];
     bot.user.setActivity(activity);
