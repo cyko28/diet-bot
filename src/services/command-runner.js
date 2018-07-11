@@ -55,6 +55,15 @@ class CommandRunner {
             this.plugins.get(plugin).run(cmd.message, cmd.params);
         }
     }
+    mock(pluginName, cmdMessage, cmdParams) {
+        console.log('\n' + chalk.blue('[MOCKING: ' + pluginName + ']'));
+        if (cmdParams.length >= 1) {
+            console.log('Params: ' + cmdParams);
+        }
+        if (pluginName) {
+            this.plugins.get(pluginName).run(cmdMessage, cmdParams);
+        }
+    }
 }
 
 module.exports = CommandRunner;
