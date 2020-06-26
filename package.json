@@ -7,23 +7,14 @@
     "author": "Scott Robertson <scott.t.robertson@gmail.com>",
     "license": "MIT",
     "dependencies": {
-        "@google-cloud/text-to-speech": "^0.2.0",
-        "chalk": "^2.4.1",
-        "discord.js": "^11.3.2",
-        "dotenv": "^6.0.0",
-        "ffmpeg-binaries": "^3.2.2-3",
-        "fs": "^0.0.1-security",
-        "fs-extra": "^6.0.1",
-        "opusscript": "^0.0.6",
-        "string-similarity": "^1.2.0"
+        "@discordjs/opus": "^0.3.2",
+        "discord.js": "^12.2.0",
+        "dotenv": "^8.2.0",
+        "fs-extra": "^9.0.1",
+        "string-similarity": "^4.0.1"
     },
     "scripts": {
-        "test": "jest test",
-        "start": "node ./src/diet-bot.js",
-        "debug": "nodemon --inspect ./src/diet-bot.js"
+        "start": "node ./src/diet-bot.js"
     },
-    "devDependencies": {
-        "jest": "^23.3.0",
-        "nodemon": "^1.17.5"
-    }
+    "devDependencies": {}
 }
