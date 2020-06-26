@@ -74,18 +74,12 @@ class Trump {
                 }, Rating: ${bestMatch.rating.toFixed(4)}`
             );
             this.react(message, 'success');
-            return this.playAudio(bestMatch.file);
+            return path.join(__dirname, 'audio', bestMatch.file);
         }
-        // return this.playRandomAudio();
         return this.react(message, 'fail');
     }
-    playRandomAudio() {
-        const random = util.randomInt(this.audioFiles.length);
-        console.log(`Playing File: "${this.audioFiles[random]}"`);
-        return path.join(__dirname, 'audio', this.audioFiles[random]);
-    }
     playAudio(fileName) {
-        return path.join(__dirname, 'audio', fileName);
+        return;
     }
     getCommandList(message) {
         // we clean the input
