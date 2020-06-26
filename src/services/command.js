@@ -9,7 +9,6 @@ class CommandQueue {
         this.pluginNames = options?.pluginNames ?? [];
         this.pluginDirPath = options?.pluginDirPath ?? './src/plugins';
         this.active = false;
-        this.init();
     }
     init() {
         this.loadPlugins();
