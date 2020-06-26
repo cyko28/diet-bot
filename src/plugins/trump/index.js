@@ -74,9 +74,11 @@ class Trump {
                 }, Rating: ${bestMatch.rating.toFixed(4)}`
             );
             this.react(message, 'success');
+            this.react(message, 'trumphair');
             return path.join(__dirname, 'audio', bestMatch.file);
         }
-        return this.react(message, 'fail');
+        this.react(message, 'fail');
+        return this.react(message, 'trumphair');
     }
     playAudio(fileName) {
         return;
