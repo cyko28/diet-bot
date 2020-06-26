@@ -26,6 +26,7 @@ class NefariousStatuses {
         const dietClanGuild = this.bot.guilds.cache
             .array()
             .find((el) => el.id === dietClanID);
+        const voiceChannels = dietClanGuild;
         const dietClanMembers = dietClanGuild.members.cache.array();
 
         // determine if we need to get all users or just one role
