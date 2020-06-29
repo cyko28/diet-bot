@@ -47,6 +47,7 @@ class CommandQueue {
             instance.commands.forEach((command) =>
                 this.commands.set(command, name)
             );
+            //Todo: add warning for commands which are overwritten (similar command names in different plugins)
         });
     }
     attemptToRunCommand() {
