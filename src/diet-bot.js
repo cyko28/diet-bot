@@ -12,7 +12,8 @@ const pluginNames = [
     'nefariousStatuses',
     'say',
     'insult',
-    'bully'
+    'bully',
+    'phraseLeaderboard',
 ];
 const commandQueue = new CommandQueue(bot, { pluginNames });
 
