@@ -14,16 +14,17 @@ class Shutdown {
             const senderHasPermission =
                 message.member.id === this.shutdownPermissionId;
             const isOriginalMessage = message.id === this.initialMessageID;
+
             if (this.canShutdown && !isOriginalMessage && senderHasPermission) {
                 // clean content
                 const messageContent = message.content.toLowerCase().trim();
 
                 // validity checks
-                const messageisYes =
+                const messageIsYes =
                     messageContent === 'y' || messageContent === 'yes';
 
                 // if validity checks are true
-                if (messageisYes && senderHasPermission) {
+                if (messageIsYes && senderHasPermission) {
                     // log the shutdown to console
                     console.log(
                         `\n[Shutdown Plugin]\n${message.member.displayName} Confirmed Shutdown. Shutting down in 5 Seconds`
