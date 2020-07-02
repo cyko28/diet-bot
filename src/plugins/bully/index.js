@@ -12,8 +12,8 @@ class Bully {
     }
     init() {
         this.bot.on('voiceStateUpdate', (oldMember, newMember) => {
-            let newUserChannel = newMember.channel;
-            let oldUserChannel = oldMember.channel;
+            const newUserChannel = newMember.channel;
+            const oldUserChannel = oldMember.channel;
             if (
                 !this.isDietBot(newMember) &&
                 ((!oldUserChannel && newUserChannel) ||
