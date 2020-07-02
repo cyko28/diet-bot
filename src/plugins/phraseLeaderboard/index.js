@@ -52,10 +52,8 @@ class PhraseLeaderboard {
                     ...trumpAudioNames,
                     ...airhornAudioNames,
                 ];
-
-                let storageTrackingMap = await storage.getItem(
-                    'phraseLeaderboardTrackingMap'
-                );
+                const localStorageKey = 'phraseLeaderboardTrackingMap';
+                let storageTrackingMap = await storage.getItem(localStorageKey);
 
                 // If the storage map is populated, set that as the tracking map.
                 if (storageTrackingMap) {
