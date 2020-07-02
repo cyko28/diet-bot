@@ -23,8 +23,8 @@ class Shutdown {
                 const messageIsYes =
                     messageContent === 'y' || messageContent === 'yes';
 
-                // if validity checks are true
-                if (messageIsYes && senderHasPermission) {
+                // if validity check is true
+                if (messageIsYes) {
                     // log the shutdown to console
                     console.log(
                         `\n[Shutdown Plugin]\n${message.member.displayName} Confirmed Shutdown. Shutting down in 5 Seconds`
@@ -50,7 +50,7 @@ class Shutdown {
                     );
 
                     // tell the discord
-                    message.reply('Shutdown Cancelled. Conditions not met.');
+                    message.reply('Shutdown Cancelled.');
 
                     this.reinitFailsales();
                 }
