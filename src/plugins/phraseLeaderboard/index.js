@@ -3,18 +3,31 @@ const path = require('path');
 const Discord = require('discord.js');
 const { debug, timeStamp } = require('console');
 const stringSimilarity = require('string-similarity');
+const storage = require('node-persist');
 
 class PhraseLeaderboard {
     constructor(bot, commandQueue) {
         this.bot = bot;
         this.commandQueue = commandQueue;
         this.commands = [];
-        this.trackedPhrases = ['rip']; // Include custom phrases to be tracked here
+        this.trackedPhrases = []; // Include custom phrases to be tracked here
         this.phraseLeaderboardTrackingMap = {};
     }
     init() {
+        // init storage
+        storage.init({
+            dir: '.storage/phraseLeaderboard',
+            stringify: JSON.stringify,
+            parse: JSON.parse,
+            encoding: 'utf8',
+            logging: false,
+            ttl: false,
+            expiredInterval: 2 * 60 * 1000,
+            forgiveParseErrors: false,
+        });
+
         setTimeout(
-            function () {
+            async function () {
                 const trumpAudioNames = this.commandQueue.plugins
                     .get('trump')
                     .audioFiles.map((fileName) => {
@@ -40,9 +53,15 @@ class PhraseLeaderboard {
                     ...airhornAudioNames,
                 ];
 
-                this.trackedPhrases.forEach((element) => {
-                    this.phraseLeaderboardTrackingMap[element] = {};
-                });
+                let storageTrackingMap = await storage.getItem(
+                    'phraseLeaderboardTrackingMap'
+                );
+
+                // If the storage map is populated, set that as the tracking map.
+                if (storageTrackingMap) {
+                    this.phraseLeaderboardTrackingMap = storageTrackingMap;
+                }
+
                 this.leaderboard();
             }.bind(this),
             1000
@@ -120,6 +139,12 @@ class PhraseLeaderboard {
             }
         }
         this.phraseLeaderboardTrackingMap[phrase] = phraseCountMap;
+
+        storage.setItem(
+            'phraseLeaderboardTrackingMap',
+            this.phraseLeaderboardTrackingMap
+        );
+
         console.log('\n[Leaderboard Plugin]');
         console.log(
             `User ${sendByUserId} has now said ${phrase} ${phraseCountMap[sendByUserId]} times.`
