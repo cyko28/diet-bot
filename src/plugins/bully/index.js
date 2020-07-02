@@ -15,10 +15,11 @@ class Bully {
             let newUserChannel = newMember.channel;
             let oldUserChannel = oldMember.channel;
             if (
-                (!oldUserChannel && newUserChannel) ||
-                (oldUserChannel &&
-                    newUserChannel &&
-                    oldUserChannel.id != newUserChannel.id)
+                !this.isDietBot(newMember) &&
+                ((!oldUserChannel && newUserChannel) ||
+                    (oldUserChannel &&
+                        newUserChannel &&
+                        oldUserChannel.id != newUserChannel.id))
             ) {
                 const timeToCheckChannelStatus =
                     Math.round(Math.random() * 10) + 10;
@@ -74,6 +75,11 @@ class Bully {
         clearInterval(this.interval);
     };
 
+    isDietBot(voiceState) {
+        const dietBotId = '279879398323257346';
+        return voiceState.member.id === dietBotId;
+    }
+
     triggerMentionToUserInChannel(
         generalTextChannel,
         userToMention,
@@ -114,7 +120,7 @@ class Bully {
         const voiceChannelsWithMultipleUsers = dietVoiceChannelsArray.filter(
             (channel) =>
                 channel.type === 'voice' &&
-                channel.members.size >= 1 &&
+                channel.members.size > 1 &&
                 channel.id != afkLandVoiceChannelId
         );
 
