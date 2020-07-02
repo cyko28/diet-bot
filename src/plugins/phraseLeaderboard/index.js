@@ -9,7 +9,7 @@ class PhraseLeaderboard {
     constructor(bot, commandQueue) {
         this.bot = bot;
         this.commandQueue = commandQueue;
-        this.commands = [];
+        this.commands = ['leaderboard'];
         this.trackedPhrases = []; // Include custom phrases to be tracked here
         this.phraseLeaderboardTrackingMap = {};
     }
@@ -65,10 +65,43 @@ class PhraseLeaderboard {
             1000
         );
     }
+    async run(message, params = []) {
+        // Voice only works in guilds, if the message does not come from a guild,
+        // we ignore it
+        if (!message.guild) return;
+
+        const dietClanID = '169703392749289472';
+        const dietClanGuild = this.bot.guilds.cache.get(dietClanID);
+
+        // Iterate through the tracked phrases map, then go through the phrase counts.
+        // Output something pretty to the channel to display the current leaderboard.
+        const embeddedMessage = Object.keys(
+            this.phraseLeaderboardTrackingMap
+        ).map((phraseKey) => {
+            let currentPhrase = `**${phraseKey}**\n`;
+            let phraseCountMap = this.phraseLeaderboardTrackingMap[phraseKey];
+
+            let embeddedPhraseCountMessage = Object.keys(phraseCountMap)
+                .sort(function (a, b) {
+                    return phraseCountMap[b] - phraseCountMap[a];
+                })
+                .map((id) => {
+                    const member = dietClanGuild.members.cache.get(id);
+                    return `_${member.displayName}_: ${phraseCountMap[id]}\n`;
+                });
+
+            return `${currentPhrase}${embeddedPhraseCountMessage}`;
+        });
+
+        const channelEmbed = new Discord.MessageEmbed()
+            .setTitle(`(╯°□°)╯ Overall Leaderboard`)
+            .setDescription(embeddedMessage);
+        message.channel.send(channelEmbed);
+    }
+
     leaderboard = async () => {
         this.bot.on('message', (message) => {
             const messageContent = message.content.toLowerCase().trim();
-
             // we find the best match in the array of choices
             const matches = stringSimilarity.findBestMatch(
                 messageContent,
@@ -108,12 +141,12 @@ class PhraseLeaderboard {
                 return `**${member.displayName}**: ${phraseCountMap[id]}\n`;
             });
 
-        const exampleEmbed = new Discord.MessageEmbed()
+        const channelEmbed = new Discord.MessageEmbed()
             .setTitle(
                 `(╯°□°)╯ ${this.capitalizeFirstLetter(phrase)}  Leaderboard`
             )
             .setDescription(embeddedMessage);
-        channel.send(exampleEmbed);
+        channel.send(channelEmbed);
     }
 
     capitalizeFirstLetter(string) {
