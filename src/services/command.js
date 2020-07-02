@@ -60,7 +60,7 @@ class CommandQueue {
             const pluginName = this.commands.get(cmd.command);
             const plugin = this.plugins.get(pluginName);
             if (cmd && pluginName && plugin) {
-                plugin.run(cmd.message, cmd.params);
+                plugin.run(cmd.message, cmd.params, cmd.command);
                 this.active = false;
             }
         } else {
