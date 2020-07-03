@@ -113,7 +113,8 @@ class PhraseLeaderboard {
                 .map((id) => {
                     const member = dietClanGuild.members.cache.get(id);
                     return `_${member.displayName}_: ${phraseCountMap[id]}\n`;
-                });
+                })
+                .join('');
 
             return `${currentPhrase}${embeddedPhraseCountMessage}`;
         });
