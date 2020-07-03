@@ -2,11 +2,11 @@ const fs = require('fs-extra');
 const path = require('path');
 const stringSimilarity = require('string-similarity');
 
-class Trump {
+class Airhorn {
     constructor(bot, commandQueue) {
         this.bot = bot;
         this.commandQueue = commandQueue;
-        this.commands = ['t', 'trump'];
+        this.commands = ['ja'];
         this.audioFiles = [];
     }
     init() {
@@ -51,7 +51,12 @@ class Trump {
 
         // we clean the input
         const arr = this.audioFiles.map((string) =>
-            string.split('.mp3')[0].split('_').join(' ')
+            string
+                .split('.mp3')[0]
+                .split('-')
+                .slice(1)
+                .map((str) => str.toLowerCase())
+                .join(' ')
         );
 
         // we find the best match in the array of choices
@@ -69,16 +74,19 @@ class Trump {
 
         if (bestMatch.rating > threshold && params.length > 0) {
             console.log(
-                `\n[Command Queue]\nBest Match: ${
+                `\n[Join Audio]\nBest Match: ${
                     bestMatch.file
                 }, Rating: ${bestMatch.rating.toFixed(4)}`
             );
             this.react(message, 'success');
-            this.react(message, 'trumphair');
+            this.react(message, 'airhorn');
             return path.join(__dirname, 'audio', bestMatch.file);
         }
-        this.react(message, 'fail');
-        return this.react(message, 'trumphair');
+        if (params.length > 0) {
+            this.react(message, 'fail');
+        }
+        this.react(message, 'airhorn');
+        return path.join(__dirname, 'audio', 'airhorn.mp3');
     }
     playAudio(fileName) {
         return;
@@ -86,7 +94,7 @@ class Trump {
     getCommandList(message) {
         // we clean the input
         const arr = this.audioFiles.map((string) =>
-            string.split('.mp3')[0].split('_').join(' ')
+            string.split('.mp3')[0].split('-').slice(1).join(' ')
         );
         return arr;
     }
@@ -100,4 +108,4 @@ class Trump {
     }
 }
 
-module.exports = Trump;
+module.exports = Airhorn;

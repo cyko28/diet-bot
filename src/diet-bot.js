@@ -16,6 +16,7 @@ const pluginNames = [
     'phraseLeaderboard',
     'shutdown',
     'joinBind',
+    'joinAudio',
 ];
 const commandQueue = new CommandQueue(bot, { pluginNames });
 

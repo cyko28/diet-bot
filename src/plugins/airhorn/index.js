@@ -94,10 +94,12 @@ class Airhorn {
         return arr;
     }
     react(message, emojiString) {
-        const target = message.guild.emojis.cache.find(
-            (emoji) => emoji.name === emojiString
-        );
-        message.react(target);
+        if (message?.guild?.emojis) {
+            const target = message.guild.emojis.cache.find(
+                (emoji) => emoji.name === emojiString
+            );
+            message.react(target);
+        }
     }
 }
 
