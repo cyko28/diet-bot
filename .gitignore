@@ -47,4 +47,4 @@ Diet Bot-b0b0da68168d.json
 src/plugins/**/generated/*.mp3
 
 # Local storage for diet-bot
-.storage
+src/.storage/*

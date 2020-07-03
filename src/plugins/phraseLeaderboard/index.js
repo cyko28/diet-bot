@@ -18,7 +18,7 @@ class PhraseLeaderboard {
     init() {
         // init storage
         storage.init({
-            dir: '.storage/phraseLeaderboard',
+            dir: 'src/.storage/phraseLeaderboard',
             stringify: JSON.stringify,
             parse: JSON.parse,
             encoding: 'utf8',
