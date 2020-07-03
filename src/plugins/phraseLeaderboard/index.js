@@ -10,7 +10,9 @@ class PhraseLeaderboard {
         this.bot = bot;
         this.commandQueue = commandQueue;
         this.commands = ['leaderboard'];
-        this.trackedPhrases = []; // Include custom phrases to be tracked here
+        this.multiCommandMap = {}; // Used to hold a map of multipe bot commands to one master command.
+        this.customTrackedPhrases = []; // Include custom phrases to be tracked here
+        this.trackedPhrases = {};
         this.phraseLeaderboardTrackingMap = {};
     }
     init() {
@@ -28,15 +30,16 @@ class PhraseLeaderboard {
 
         setTimeout(
             async function () {
-                const trumpAudioNames = this.commandQueue.plugins
-                    .get('trump')
-                    .audioFiles.map((fileName) => {
+                const trumpPlugin = this.commandQueue.plugins.get('trump');
+                const trumpAudioNames = trumpPlugin.audioFiles.map(
+                    (fileName) => {
                         return fileName.split('.mp3')[0].split('_').join(' ');
-                    });
+                    }
+                );
 
-                const airhornAudioNames = this.commandQueue.plugins
-                    .get('airhorn')
-                    .audioFiles.map((fileName) => {
+                const airhornPlugin = this.commandQueue.plugins.get('airhorn');
+                const airhornAudioNames = airhornPlugin.audioFiles.map(
+                    (fileName) => {
                         if (!fileName.split('airhorn-')[1]) {
                             return 'airhorn';
                         }
@@ -45,13 +48,35 @@ class PhraseLeaderboard {
                             .split('.mp3')[0]
                             .split('_')
                             .join(' ');
-                    });
+                    }
+                );
 
-                this.trackedPhrases = [
-                    ...this.trackedPhrases,
-                    ...trumpAudioNames,
-                    ...airhornAudioNames,
-                ];
+                // Populate all commands from each plugins into the multi command map
+                // The trackedPhrases map will only use the first command of each plugin as the lookup
+                airhornPlugin.commands.forEach(
+                    function (entry) {
+                        this.multiCommandMap[
+                            `${entry}`
+                        ] = `${airhornPlugin.commands[0]}`;
+                    }.bind(this)
+                );
+
+                this.trackedPhrases[
+                    `${airhornPlugin.commands[0]}`
+                ] = airhornAudioNames;
+
+                trumpPlugin.commands.forEach(
+                    function (entry) {
+                        this.multiCommandMap[
+                            `${entry}`
+                        ] = `${trumpPlugin.commands[0]}`;
+                    }.bind(this)
+                );
+
+                this.trackedPhrases[
+                    `${trumpPlugin.commands[0]}`
+                ] = trumpAudioNames;
+
                 const localStorageKey = 'phraseLeaderboardTrackingMap';
                 let storageTrackingMap = await storage.getItem(localStorageKey);
 
@@ -101,31 +126,65 @@ class PhraseLeaderboard {
 
     leaderboard = async () => {
         this.bot.on('message', (message) => {
-            const messageContent = message.content.toLowerCase().trim();
-            // we find the best match in the array of choices
-            const matches = stringSimilarity.findBestMatch(
-                messageContent,
-                this.trackedPhrases
+            let messageContent = message.content.toLowerCase().trim();
+
+            const trackedPhrasesList = this.getTrackedPhrasesListToUse(
+                messageContent
             );
-            if (matches.bestMatch.rating > 0.7) {
-                console.log('\n[Leaderboard Plugin]');
-                console.log(
-                    `${messageContent} is a tracked phrase in the leaderboard.`
+
+            if (trackedPhrasesList.length != 0) {
+                // strip any potential commands from the original message
+                messageContent = this.stripPotentialCommand(messageContent);
+
+                // we find the best match in the array of choices
+                const matches = stringSimilarity.findBestMatch(
+                    messageContent,
+                    trackedPhrasesList
                 );
-                const sendByUserId = message.author.id;
-                this.updatePhraseCountForUser(
-                    sendByUserId,
-                    this.phraseLeaderboardTrackingMap,
-                    matches.bestMatch.target
-                );
-                this.outputStatsToChannel(
-                    message.channel,
-                    matches.bestMatch.target,
-                    this.phraseLeaderboardTrackingMap[matches.bestMatch.target]
-                );
+                if (matches.bestMatch.rating > 0.7) {
+                    console.log('\n[Leaderboard Plugin]');
+                    console.log(
+                        `${messageContent} is a tracked phrase in the leaderboard.`
+                    );
+                    const sendByUserId = message.author.id;
+                    this.updatePhraseCountForUser(
+                        sendByUserId,
+                        this.phraseLeaderboardTrackingMap,
+                        matches.bestMatch.target
+                    );
+                    this.outputStatsToChannel(
+                        message.channel,
+                        matches.bestMatch.target,
+                        this.phraseLeaderboardTrackingMap[
+                            matches.bestMatch.target
+                        ]
+                    );
+                }
             }
         });
     };
+
+    stripPotentialCommand(messageContent) {
+        if (messageContent.indexOf('!') == 0) {
+            return messageContent.substring(messageContent.indexOf(' ') + 1);
+        }
+        return messageContent;
+    }
+
+    getTrackedPhrasesListToUse(messageContent) {
+        if (this.customTrackedPhrases.indexOf(messageContent) > -1) {
+            return this.customTrackedPhrases;
+        }
+        const potentialCommand = messageContent.substring(1).split(' ')[0];
+        if (
+            potentialCommand &&
+            this.multiCommandMap[potentialCommand] != undefined
+        ) {
+            return this.trackedPhrases[this.multiCommandMap[potentialCommand]];
+        }
+
+        return [];
+    }
 
     outputStatsToChannel(channel, phrase, phraseCountMap) {
         const dietClanID = '169703392749289472';
