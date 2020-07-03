@@ -78,6 +78,7 @@ class CommandQueue {
 }
 
 class InputCommand {
+    // takes msg object as input
     constructor(msg) {
         this.message = msg;
         this.tokens = msg.content.split(' ');
@@ -88,7 +89,7 @@ class InputCommand {
     validate() {
         const regex = RegExp('![a-zA-Z]+');
         const startsWithExclaim = this.message.content.slice(0, 1) === '!';
-        return startsWithExclaim && regex.test(this.message);
+        return startsWithExclaim && regex.test(this.message.content);
     }
 }
 
