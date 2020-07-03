@@ -15,6 +15,7 @@ const pluginNames = [
     'bully',
     'phraseLeaderboard',
     'shutdown',
+    'joinLeaveBinds',
 ];
 const commandQueue = new CommandQueue(bot, { pluginNames });
 
