@@ -126,6 +126,7 @@ class JoinBind {
             '!insult',
             '!r',
             '!rave',
+            '!ja',
         ];
         const isOnWhitelist = whitelist.includes(params[0]);
         const tooLong = params.length > threshold;
