@@ -147,9 +147,9 @@ class PhraseLeaderboard {
                     console.log(
                         `${messageContent} is a tracked phrase in the leaderboard.`
                     );
-                    const sendByUserId = message.author.id;
+
                     this.updatePhraseCountForUser(
-                        sendByUserId,
+                        message,
                         this.phraseLeaderboardTrackingMap,
                         matches.bestMatch.target
                     );
@@ -213,11 +213,8 @@ class PhraseLeaderboard {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    updatePhraseCountForUser(
-        sendByUserId,
-        phraseLeaderboardTrackingMap,
-        phrase
-    ) {
+    updatePhraseCountForUser(message, phraseLeaderboardTrackingMap, phrase) {
+        const sendByUserId = message.author.id;
         let phraseCountMap = this.phraseLeaderboardTrackingMap[phrase];
         if (!phraseCountMap) {
             phraseCountMap = {};
@@ -238,7 +235,7 @@ class PhraseLeaderboard {
 
         console.log('\n[Leaderboard Plugin]');
         console.log(
-            `User ${sendByUserId} has now said ${phrase} ${phraseCountMap[sendByUserId]} times.`
+            `User ${message.member.displayName} has now said ${phrase} ${phraseCountMap[sendByUserId]} times.`
         );
     }
 }
