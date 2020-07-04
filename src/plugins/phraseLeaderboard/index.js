@@ -142,7 +142,7 @@ class PhraseLeaderboard {
                     messageContent,
                     trackedPhrasesList
                 );
-                if (matches.bestMatch.rating > 0.7) {
+                if (matches.bestMatch.rating > 0.5) {
                     console.log('\n[Leaderboard Plugin]');
                     console.log(
                         `${messageContent} is a tracked phrase in the leaderboard.`
