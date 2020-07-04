@@ -100,29 +100,59 @@ class PhraseLeaderboard {
 
         // Iterate through the tracked phrases map, then go through the phrase counts.
         // Output something pretty to the channel to display the current leaderboard.
-        const embeddedMessage = Object.keys(
-            this.phraseLeaderboardTrackingMap
-        ).map((phraseKey) => {
-            let currentPhrase = `**${phraseKey}**\n`;
-            let phraseCountMap = this.phraseLeaderboardTrackingMap[phraseKey];
+        const embeddedMessage = Object.keys(this.phraseLeaderboardTrackingMap)
+            .filter((el) => {
+                const map = this.phraseLeaderboardTrackingMap;
+                const threshold = 5;
+                const val = Object.values(map[el])
+                    .map((el) => parseInt(el))
+                    .reduce((acc, el) => acc + el, 0);
+                return val >= threshold;
+            })
+            .sort((a, b) => {
+                const map = this.phraseLeaderboardTrackingMap;
+                const maxA = Object.values(map[a])
+                    .map((el) => parseInt(el))
+                    .reduce((acc, el) => acc + el, 0);
+                const maxB = Object.values(map[b])
+                    .map((el) => parseInt(el))
+                    .reduce((acc, el) => acc + el, 0);
 
-            let embeddedPhraseCountMessage = Object.keys(phraseCountMap)
-                .sort(function (a, b) {
-                    return phraseCountMap[b] - phraseCountMap[a];
-                })
-                .map((id) => {
-                    const member = dietClanGuild.members.cache.get(id);
-                    return `_${member.displayName}_: ${phraseCountMap[id]}\n`;
-                })
-                .join('');
+                return maxB - maxA;
+            })
+            .map((phraseKey) => {
+                const currentPhrase = `**${phraseKey}**\n`;
+                const phraseCountMap = this.phraseLeaderboardTrackingMap[
+                    phraseKey
+                ];
 
-            return `${currentPhrase}${embeddedPhraseCountMessage}`;
-        });
+                const embeddedPhraseCountMessage = Object.keys(phraseCountMap)
+                    .sort(function (a, b) {
+                        return phraseCountMap[b] - phraseCountMap[a];
+                    })
+                    .map((id) => {
+                        const member = dietClanGuild.members.cache.get(id);
+                        return `_${member.displayName}_: ${phraseCountMap[id]}\n`;
+                    })
+                    .join('');
 
-        const channelEmbed = new Discord.MessageEmbed()
-            .setTitle(`(╯°□°)╯ Overall Leaderboard`)
-            .setDescription(embeddedMessage);
-        message.channel.send(channelEmbed);
+                return `${currentPhrase}${embeddedPhraseCountMessage}`;
+            });
+
+        // while loop to process large amounts of leaderboards
+        const startLength = embeddedMessage.length;
+        while (embeddedMessage.length) {
+            const title =
+                startLength === embeddedMessage.length
+                    ? `(╯°□°)╯ Overall Leaderboard`
+                    : '';
+            const subMessage = embeddedMessage.splice(0, 10);
+
+            const channelEmbed = new Discord.MessageEmbed()
+                .setTitle(title)
+                .setDescription(subMessage);
+            message.channel.send(channelEmbed);
+        }
     }
 
     leaderboard = async () => {
