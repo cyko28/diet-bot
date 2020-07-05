@@ -37,7 +37,10 @@ class JoinBind {
             const oldUserChannel = oldMember.channel;
             if (
                 !this.isDietBot(newMember) &&
-                this.userJoinedChannel(oldUserChannel, newUserChannel)
+                this.userJoinedChannelNonEmptyChannel(
+                    oldUserChannel,
+                    newUserChannel
+                )
             ) {
                 // Extract bind, if exists
                 const params = this.userBindsMap[`${newMember.member.id}`];
@@ -52,8 +55,12 @@ class JoinBind {
         });
     };
 
-    userJoinedChannel(oldUserChannel, newUserChannel) {
-        return !oldUserChannel && newUserChannel;
+    userJoinedChannelNonEmptyChannel(oldUserChannel, newUserChannel) {
+        return (
+            !oldUserChannel &&
+            newUserChannel &&
+            newUserChannel.members.size != 1
+        );
     }
 
     run(message, params = [], token) {

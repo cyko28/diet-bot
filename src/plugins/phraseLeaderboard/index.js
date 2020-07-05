@@ -125,14 +125,25 @@ class PhraseLeaderboard {
                 const phraseCountMap = this.phraseLeaderboardTrackingMap[
                     phraseKey
                 ];
+                const firstPlaceEmoji = ':first_place:';
+                const secondPlaceEmoji = ':second_place:';
+                const thirdPlaceEmoji = ':third_place:';
 
                 const embeddedPhraseCountMessage = Object.keys(phraseCountMap)
                     .sort(function (a, b) {
                         return phraseCountMap[b] - phraseCountMap[a];
                     })
-                    .map((id) => {
+                    .map((id, index) => {
+                        const selectedEmoji =
+                            index == 0
+                                ? firstPlaceEmoji
+                                : index == 1
+                                ? secondPlaceEmoji
+                                : index == 2
+                                ? thirdPlaceEmoji
+                                : ``;
                         const member = dietClanGuild.members.cache.get(id);
-                        return `_${member.displayName}_: ${phraseCountMap[id]}\n`;
+                        return `_${member.displayName}_: ${phraseCountMap[id]} ${selectedEmoji}\n `;
                     })
                     .join('');
 
