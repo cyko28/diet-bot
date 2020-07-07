@@ -9,50 +9,57 @@ class Shutdown {
     }
     init() {
         this.bot.on('message', (message) => {
-            // only check if this is the message *following*
-            // the initial message and can shutdown has been flagged
-            const senderHasPermission =
-                message.member.id === this.shutdownPermissionId;
-            const isOriginalMessage = message.id === this.initialMessageID;
+            if (!this.isDietBot(message)) {
+                // only check if this is the message *following*
+                // the initial message and can shutdown has been flagged
 
-            if (this.canShutdown && !isOriginalMessage && senderHasPermission) {
-                // clean content
-                const messageContent = message.content.toLowerCase().trim();
+                const senderHasPermission =
+                    message.member.id === this.shutdownPermissionId;
+                const isOriginalMessage = message.id === this.initialMessageID;
 
-                // validity checks
-                const messageIsYes =
-                    messageContent === 'y' || messageContent === 'yes';
+                if (
+                    this.canShutdown &&
+                    !isOriginalMessage &&
+                    senderHasPermission
+                ) {
+                    // clean content
+                    const messageContent = message.content.toLowerCase().trim();
 
-                // if validity check is true
-                if (messageIsYes) {
-                    // log the shutdown to console
-                    console.log(
-                        `\n[Shutdown Plugin]\n${message.member.displayName} Confirmed Shutdown. Shutting down in 5 Seconds`
-                    );
+                    // validity checks
+                    const messageIsYes =
+                        messageContent === 'y' || messageContent === 'yes';
 
-                    // tell the discord
-                    message.reply('Shutting Down in 5 seconds');
-
-                    // shut down
-                    setTimeout(() => {
+                    // if validity check is true
+                    if (messageIsYes) {
+                        // log the shutdown to console
                         console.log(
-                            `\n[Shutdown Plugin]\n${message.member.displayName} Shutdown Command Sent`
+                            `\n[Shutdown Plugin]\n${message.member.displayName} Confirmed Shutdown. Shutting down in 5 Seconds`
                         );
-                        process.exitCode = 0;
-                        process.exit();
-                    }, 5000);
-                } else {
-                    // otherwise, reinit
 
-                    // log the reversion to console
-                    console.log(
-                        `\n[Shutdown Plugin]\nShutdown Cancelled. Conditions not met.`
-                    );
+                        // tell the discord
+                        message.reply('Shutting Down in 5 seconds');
 
-                    // tell the discord
-                    message.reply('Shutdown Cancelled.');
+                        // shut down
+                        setTimeout(() => {
+                            console.log(
+                                `\n[Shutdown Plugin]\n${message.member.displayName} Shutdown Command Sent`
+                            );
+                            process.exitCode = 0;
+                            process.exit();
+                        }, 5000);
+                    } else {
+                        // otherwise, reinit
 
-                    this.reinitFailsales();
+                        // log the reversion to console
+                        console.log(
+                            `\n[Shutdown Plugin]\nShutdown Cancelled. Conditions not met.`
+                        );
+
+                        // tell the discord
+                        message.reply('Shutdown Cancelled.');
+
+                        this.reinitFailsales();
+                    }
                 }
             }
         });
@@ -71,6 +78,11 @@ class Shutdown {
         this.canShutdown = false;
         this.shutdownPermissionId = null;
         this.initialMessageID = null;
+    }
+
+    isDietBot(message) {
+        const dietBotId = '279879398323257346';
+        return message.author.id === dietBotId;
     }
 }
 
