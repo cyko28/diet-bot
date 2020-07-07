@@ -80,16 +80,20 @@ class NefariousStatuses {
             `Hanging With Satan`,
             `Restarting Simulation`,
             `Bagging Milk with Catcher`,
-            `Wire Tapping USER`,
+            `Wire Tapping ${user}`,
             `Selling ${user}'s Personal Data for Profit`,
             `Getting Comfy with the Russians`,
-            `Deleting ${user}'s System 32 Files`,
+            `Deleting ${user}'s System32 Files`,
             `BSoDing ${user}`,
             `Triggering ${user}`,
             `Making a Wawa Run`,
             `Hogtying ${user}`,
             `Spamming @${user}`,
             `Kidnapping ${user}`,
+            `Coughing on ${user}`,
+            `Spreading The Rona`,
+            `Gaining sentience`,
+            `Deciding how to spell Jabroni`,
         ];
     }
 }
