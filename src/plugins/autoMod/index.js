@@ -1,5 +1,3 @@
-const Discord = require('discord.js');
-const { debug, timeStamp } = require('console');
 const { InputCommand } = require('../../services/command');
 
 class AutoMod {
@@ -7,7 +5,6 @@ class AutoMod {
         this.bot = bot;
         this.commandQueue = commandQueue;
         this.commands = [];
-        this.interval = null;
     }
     init() {
         this.autoMod();
