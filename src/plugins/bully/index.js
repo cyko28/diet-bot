@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const { debug } = require('console');
+const Sentiment = require('sentiment');
 
 class Bully {
     constructor(bot, commandQueue) {
@@ -9,6 +10,7 @@ class Bully {
         this.commands = [];
         this.interval = null;
         this.userMap = {};
+        this.sentiment = new Sentiment();
     }
     init() {
         this.bot.on('voiceStateUpdate', (oldMember, newMember) => {
@@ -83,13 +85,59 @@ class Bully {
     };
 
     handleFoodNetworkMessage(message) {
+        if (this.isFoodNetworkChannel(message.channel)) {
+            // First perform sentiment anaylsis on what was said.
+            // If negative, give a gordon emoji
+            const result = this.sentiment.analyze(message.content);
+            if (result.score < 0) {
+                console.log('\n[Bully Plugin]');
+                console.log(
+                    `${message.member.displayName}'s message has a negative sentiment, with a score of ${result.score}`
+                );
+                this.react(message, 'gordon');
+                // Dont need to check any other conditions since a reaction was done already.
+                return;
+            }
+        }
+
         if (
             this.isFoodNetworkChannel(message.channel) &&
             this.isHoobsherMessage(message)
         ) {
-            //react with gordon emoji
-            this.react(message, 'gordon');
+            // Fetch the last 10 messages, react if response was sent to a message with an attachment within 30 mins.
+            message.channel.messages
+                .fetch({
+                    limit: 10,
+                })
+                .then((messages) => {
+                    const hoobsherId = '197528955245428737';
+                    const hoobserMessage = messages.array()[0];
+                    const attachmentMessages = messages
+                        .filter(
+                            (m) =>
+                                m.author.id !== hoobsherId &&
+                                m.attachments.size >= 1 &&
+                                this.isValidMessageTime(hoobserMessage, m)
+                        )
+                        .array();
+
+                    if (attachmentMessages.length > 0) {
+                        console.log('\n[Bully Plugin]');
+                        console.log(
+                            `${hoobserMessage.member.displayName}'s has sent a message in response to a post with an attachment, within 30 minutes.`
+                        );
+                        this.react(hoobserMessage, 'gordon');
+                    }
+                });
         }
+    }
+
+    isValidMessageTime(message1, message2) {
+        const delta =
+            Math.abs(message1.createdTimestamp - message2.createdTimestamp) /
+            1000;
+        const minutes = Math.floor(delta / 60);
+        return minutes <= 10;
     }
 
     triggerMentionToUserInChannel(

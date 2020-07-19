@@ -13,6 +13,7 @@
         "fs-extra": "^9.0.1",
         "node-persist": "^3.1.0",
         "say": "^0.16.0",
+        "sentiment": "^5.0.2",
         "string-similarity": "^4.0.1"
     },
     "scripts": {
