@@ -36,6 +36,13 @@ class Bully {
                 );
             }
         });
+
+        this.bot.on('message', (message) => {
+            // Only check messages which are not diet bot
+            if (!this.isDietBot(message)) {
+                this.handleFoodNetworkMessage(message);
+            }
+        });
     }
     bully = async () => {
         const loneVoiceUser = this.getLoneVoiceUser();
@@ -75,9 +82,14 @@ class Bully {
         clearInterval(this.interval);
     };
 
-    isDietBot(voiceState) {
-        const dietBotId = '279879398323257346';
-        return voiceState.member.id === dietBotId;
+    handleFoodNetworkMessage(message) {
+        if (
+            this.isFoodNetworkChannel(message.channel) &&
+            this.isHoobsherMessage(message)
+        ) {
+            //react with gordon emoji
+            this.react(message, 'gordon');
+        }
     }
 
     triggerMentionToUserInChannel(
@@ -145,6 +157,30 @@ class Bully {
             console.log('\n[Bully Plugin]');
             console.log(`No lone user found.`);
         }
+    }
+
+    react(message, emojiString) {
+        if (message?.guild?.emojis) {
+            const target = message.guild.emojis.cache.find(
+                (emoji) => emoji.name === emojiString
+            );
+            message.react(target);
+        }
+    }
+
+    isHoobsherMessage(message) {
+        const hoobsherId = '197528955245428737';
+        return message.author.id == hoobsherId;
+    }
+
+    isFoodNetworkChannel(channel) {
+        const foodNetworkChannelId = '715796536445108294';
+        return channel.id == foodNetworkChannelId;
+    }
+
+    isDietBot(voiceState) {
+        const dietBotId = '279879398323257346';
+        return voiceState.member.id === dietBotId;
     }
 }
 
