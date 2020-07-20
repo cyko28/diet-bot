@@ -95,49 +95,14 @@ class Bully {
                     `${message.member.displayName}'s message has a negative sentiment, with a score of ${result.score}`
                 );
                 this.react(message, 'gordon');
-                // Dont need to check any other conditions since a reaction was done already.
-                return;
+            } else if (message.attachments.size >= 1) {
+                console.log('\n[Bully Plugin]');
+                console.log(
+                    `${message.member.displayName}'s has posted a message in the food network with an attachment. Reacting with gordon.`
+                );
+                this.react(message, 'gordon');
             }
         }
-
-        if (
-            this.isFoodNetworkChannel(message.channel) &&
-            this.isHoobsherMessage(message)
-        ) {
-            // Fetch the last 10 messages, react if response was sent to a message with an attachment within 30 mins.
-            message.channel.messages
-                .fetch({
-                    limit: 10,
-                })
-                .then((messages) => {
-                    const hoobsherId = '197528955245428737';
-                    const hoobserMessage = messages.array()[0];
-                    const attachmentMessages = messages
-                        .filter(
-                            (m) =>
-                                m.author.id !== hoobsherId &&
-                                m.attachments.size >= 1 &&
-                                this.isValidMessageTime(hoobserMessage, m)
-                        )
-                        .array();
-
-                    if (attachmentMessages.length > 0) {
-                        console.log('\n[Bully Plugin]');
-                        console.log(
-                            `${hoobserMessage.member.displayName}'s has sent a message in response to a post with an attachment, within 30 minutes.`
-                        );
-                        this.react(hoobserMessage, 'gordon');
-                    }
-                });
-        }
-    }
-
-    isValidMessageTime(message1, message2) {
-        const delta =
-            Math.abs(message1.createdTimestamp - message2.createdTimestamp) /
-            1000;
-        const minutes = Math.floor(delta / 60);
-        return minutes <= 10;
     }
 
     triggerMentionToUserInChannel(
@@ -214,11 +179,6 @@ class Bully {
             );
             message.react(target);
         }
-    }
-
-    isHoobsherMessage(message) {
-        const hoobsherId = '197528955245428737';
-        return message.author.id == hoobsherId;
     }
 
     isFoodNetworkChannel(channel) {
