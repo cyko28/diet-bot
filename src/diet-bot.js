@@ -49,6 +49,8 @@ bot.login(process.env.TOKEN);
 function printLogo() {
     const speedGap = 25;
     setTimeout(() => {
+        console.log(' ');
+        console.log('  ');
         console.log(`                  ,,.─╖▓▓█▓╣░   ░▒▓▓████▄▄╦,`);
     }, 1 * speedGap);
     setTimeout(() => {
