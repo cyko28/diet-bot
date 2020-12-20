@@ -188,7 +188,6 @@ class Bully {
 
     isDietBot(voiceState) {
         const dietBotId = '279879398323257346';
-        // debugger;
         return dietBotId === voiceState.member?.id;
     }
 }
