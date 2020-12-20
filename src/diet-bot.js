@@ -18,6 +18,7 @@ const pluginNames = [
     'joinBind',
     'joinAudio',
     'AutoMod',
+    'stonks',
 ];
 const commandQueue = new CommandQueue(bot, { pluginNames });
 
