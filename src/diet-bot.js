@@ -22,6 +22,31 @@ const pluginNames = [
 const commandQueue = new CommandQueue(bot, { pluginNames });
 
 bot.on('ready', () => {
+    printLogo();
+});
+
+bot.on('message', (msg) => {
+    const input = new InputCommand(msg);
+    commandQueue.add(input);
+});
+
+bot.on('voiceStateUpdate', handleVoiceStateUpdate);
+
+function handleVoiceStateUpdate(before) {
+    if (before.member.displayName === 'diet-bot') {
+        if (!before.channelID) {
+            commandQueue.active = true;
+        } else {
+            setTimeout(() => {
+                commandQueue.active = false;
+            }, 100);
+        }
+    }
+}
+
+bot.login(process.env.TOKEN);
+
+function printLogo() {
     const speedGap = 25;
     setTimeout(() => {
         console.log(`                  ,,.─╖▓▓█▓╣░   ░▒▓▓████▄▄╦,`);
@@ -133,25 +158,4 @@ bot.on('ready', () => {
     setTimeout(() => {
         commandQueue.init();
     }, 31 * speedGap);
-});
-
-bot.on('message', (msg) => {
-    const input = new InputCommand(msg);
-    commandQueue.add(input);
-});
-
-bot.on('voiceStateUpdate', handleVoiceStateUpdate);
-
-function handleVoiceStateUpdate(before) {
-    if (before.member.displayName === 'diet-bot') {
-        if (!before.channelID) {
-            commandQueue.active = true;
-        } else {
-            setTimeout(() => {
-                commandQueue.active = false;
-            }, 100);
-        }
-    }
 }
-
-bot.login(process.env.TOKEN);
