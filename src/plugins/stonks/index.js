@@ -41,7 +41,7 @@ class Stonks {
     }
     generateTable = (data) => {
         this.data = data;
-        const header = ['POS', 'TIK', 'OCR', 'SNT', 'IDX'];
+        const header = ['POS', 'TIK', 'OCR', 'SNT', 'IDX', 'CNG'];
         const rows = this.data.data.map((stonk, index) => {
             return [
                 `${index + 1}`,
@@ -49,6 +49,7 @@ class Stonks {
                 stonk.occurances,
                 stonk.sentiment,
                 stonk.index,
+                stonk.changePercentage,
             ];
         });
         this.table = new AsciiTable('Diet Stonks');
