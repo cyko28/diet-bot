@@ -7,7 +7,7 @@ class Stonks {
     constructor(bot, commandQueue) {
         this.bot = bot;
         this.commandQueue = commandQueue;
-        this.commands = [];
+        this.commands = ['stock', 'stocks', 'stonk', 'stonks'];
         this.nextCheck = 0;
         this.data = null;
         this.ready = false;
@@ -24,58 +24,47 @@ class Stonks {
             this.hitAPI();
         });
     }
+
+    run() {
+        this.hitAPI();
+    }
+
     hitAPI() {
-        const url = 'https://wall-street-analyzer.herokuapp.com/api/dietbot';
+        const url = 'https://diet-stonks.herokuapp.com/api';
         fetch(url, { timeout: 60000 })
             .then((res) => {
                 this.status = res.status;
                 return res.json();
             })
-            .then(this.processData)
-            .then(this.generateTable.bind(this))
-            .then(this.publishTable.bind(this));
+            .then(this.generateTable)
+            .then(this.publishTable);
     }
-
-    processData = (json) => {
-        this.data = json;
-        this.ready = true;
-
-        // add key for concatenated comment strings
-        this.data.data = this.data.data.map((stonk) => {
-            const mergedComments = stonk.comments.reduce((acc, comment) => {
-                return `${acc} ${comment.comment}`;
-            }, '');
-            const sentiment = new Sentiment().analyze(mergedComments).score;
-            stonk.mergeComments = mergedComments;
-            stonk.sentiment = sentiment;
-            return stonk;
-        });
-    };
-    generateTable() {
-        this.table = new AsciiTable('Stonks');
-        const header = ['pos', 'stonk', 'name', 'score', 'sent.'];
-        const rows = this.data.data.map((stonk) => {
+    generateTable = (data) => {
+        this.data = data;
+        const header = ['POS', 'TIK', 'OCR', 'SNT', 'IDX'];
+        const rows = this.data.data.map((stonk, index) => {
             return [
-                stonk.position,
+                `${index + 1}`,
                 stonk.symbol,
-                `${stonk.name.substr(0, 10)}.`,
-                stonk.score,
+                stonk.occurances,
                 stonk.sentiment,
+                stonk.index,
             ];
         });
+        this.table = new AsciiTable('Diet Stonks');
         this.table.setHeading(...header);
         this.table.addRowMatrix(rows);
-    }
-    publishTable() {
-        const channel = this.getDietBotChannel();
+    };
 
+    publishTable = () => {
         console.log('\n[Stonks Plugin]');
         console.log(`Publishing Table:`);
         console.log(this.table.toString());
 
+        const channel = this.getDietBotChannel();
         const msg = `\`\`\`\n${this.table.toString()}\n\`\`\``;
         channel.send(msg);
-    }
+    };
 
     getDietBotChannel() {
         const dietClanID = '169703392749289472';
