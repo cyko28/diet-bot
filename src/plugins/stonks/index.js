@@ -30,18 +30,25 @@ class Stonks {
     }
 
     hitAPI() {
-        const url = 'https://diet-stonks.herokuapp.com/api';
-        fetch(url, { timeout: 60000 })
+        const url = 'https://diet-stonks.herokuapp.com/api/v1/wsa';
+        fetch(url, { timeout: 20000 })
             .then((res) => {
                 this.status = res.status;
                 return res.json();
             })
             .then(this.generateTable)
-            .then(this.publishTable);
+            .then(this.publishTable)
+            .catch((error) => {
+                const channel = this.getDietBotChannel();
+                const msg = `\`\`\`\n${error.message}\n\`\`\``;
+                channel.send(msg);
+            });
     }
     generateTable = (data) => {
         this.data = data;
-        const header = ['POS', 'TIK', 'OCR', 'SNT', 'IDX', 'CNG'];
+        const time = new Date(data.raw.unixTimestamp);
+        const cosmeticTime = `${time.toLocaleTimeString('en-US')}`;
+        const header = ['POS', 'TIK', 'OCR', 'SNT', 'IDX', 'CUR', 'CNG'];
         const rows = this.data.data.map((stonk, index) => {
             return [
                 `${index + 1}`,
@@ -49,12 +56,14 @@ class Stonks {
                 stonk.occurances,
                 stonk.sentiment,
                 stonk.index,
-                stonk.changePercentage,
+                `$${stonk.price.current.toFixed(2)}`,
+                `${stonk.price.changePercentage.toFixed(2)}%`,
             ];
         });
-        this.table = new AsciiTable('Diet Stonks');
+        this.table = new AsciiTable(`Diet Stonks @ ${cosmeticTime}`);
         this.table.setHeading(...header);
         this.table.addRowMatrix(rows);
+        this.table.setAlign(6, AsciiTable.RIGHT);
     };
 
     publishTable = () => {
