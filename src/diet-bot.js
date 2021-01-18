@@ -19,6 +19,7 @@ const pluginNames = [
     'joinAudio',
     'AutoMod',
     'stonks',
+    'DietLeague'
 ];
 const commandQueue = new CommandQueue(bot, { pluginNames });
 
