@@ -10,7 +10,7 @@ class DietLeague {
         this.userIdsWithPermissionsToAdmin = ['120436529725308930', '130511627027087360'];
         this.categoryName = 'Diet League Season 3';
         this.categoryId = null;
-        this.dietLeagueChannelNames = ['❄️ The Ice Age', '🦖 Dinosaurs'];
+        this.dietLeagueChannelNames = ['❄️ The Ice Age', '🦖 The Dinosaurs'];
         this.createdChannelIds = [];
         this.inGamePlayers = [];
     }
@@ -29,7 +29,9 @@ class DietLeague {
                 }
             } else if ('gather' === command) {
                 // move players from inGamePlayers array back to the rocket league channnel
-                this.gatherInGamePlayersToMainChannel()
+                this.gatherInGamePlayersToMainChannel();
+            } else if ('possible' === command) {
+                this.hitAPIForPossibleMatches(params);
             }
         } else {
             console.log('\n[Diet League Plugin]');
@@ -38,6 +40,50 @@ class DietLeague {
             );
         }
     }
+
+    hitAPIForPossibleMatches(params) {
+        const activeVoiceUsers = this.getActiveVoiceUsersInAnyChannel();
+        let userIds = [];
+        activeVoiceUsers.forEach((entry) => {
+            userIds.push(entry.id);
+        });
+        const message = {
+            ids: userIds,
+            scope: params?.[1] ?? "upcoming"
+        }
+
+        const url = `https://dietleague.gg/_callbacks/get-playable-matches.php`;
+        fetch(url, {
+            method: 'POST',
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+            timeout: 60000,
+            body: JSON.stringify(message)
+        }).then((res) => {
+            return res.json();;
+        })
+        .then((data) => {
+            if(data !== null) {
+                console.log(data);
+
+                const channel = this.getDietBotChannel();
+                
+                let body = data.map((el) => {
+                    return `${el.game_number}\t${el.player_a}\t${el.player_b}\t${el.player_c}\t${el.player_d}`;
+                }).reduce((acc, el) => `${acc}\n${el}`, '');
+
+                if(body === '') {
+                    body = 'No matches :(';
+                }
+
+                const msg = `\`\`\`\n${body}\n\`\`\``;
+                channel.send(msg);
+            }
+        });
+    }
+
 
     hitAPIForMatchInfo(gameNumber) {
         const url = `http://dietleague.gg/_callbacks/get-match.php?match=${gameNumber}`;
@@ -133,7 +179,6 @@ class DietLeague {
             `Moving players back to main channel. `
         );
         const destinationChannel = this.getRocketLeagueVoiceChannel();
-        debugger;
         this.inGamePlayers.forEach((entry, index, arr) => {
             const player = this.getDiscordUser(entry);
             player.voice.setChannel(destinationChannel).catch(err => console.log(err));
@@ -224,6 +269,29 @@ class DietLeague {
                     && channel.id !== '256289456502341633'        // not the AFK channel
             );
         return voiceChannelsWithoutUsers[0];
+    }
+
+    getActiveVoiceUsersInAnyChannel() {
+        const dietClanID = '169703392749289472';
+        const dietClanGuild = this.bot.guilds.cache
+            .array()
+            .find((el) => el.id === dietClanID);
+        const voiceChannelsWithUsers = dietClanGuild.channels.cache
+            .array()
+            .filter(
+                (channel) =>
+                    channel.type === 'voice' && channel.members.size > 0
+            );
+        return voiceChannelsWithUsers.map((chan) => chan.members.array()).flat()
+    }
+
+    getDietBotChannel() {
+        const dietClanID = '169703392749289472';
+        const dietClanGuild = this.bot.guilds.cache
+            .array()
+            .find((el) => el.id === dietClanID);
+        const dietBotChannelID = '462447510456107029';
+        return dietClanGuild.channels.cache.get(dietBotChannelID);
     }
 }
 
