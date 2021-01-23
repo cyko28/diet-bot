@@ -86,6 +86,18 @@ class DietLeague {
 
 
     hitAPIForMatchInfo(gameNumber) {
+        if(this.createdChannelIds.length > 0) {
+            console.log('\n[Diet League Plugin]');
+            console.log(
+                `A game is already setup. Run '!dl gather' to clear complete it. `
+            );
+
+            const channel = this.getDietBotChannel();
+            const msg = `\`\`\`\nVoice channels are already setup.\n\`\`\``;
+            channel.send(msg);
+            return;
+        }
+
         const url = `http://dietleague.gg/_callbacks/get-match.php?match=${gameNumber}`;
         fetch(url, { timeout: 60000 })
             .then((res) => {
@@ -93,13 +105,19 @@ class DietLeague {
                 return res.json();
             })
             .then((data) => {
-                console.log('\n[Diet League Plugin]');
-                console.log(
-                    `Moving players into their own voice channel for game ${gameNumber} . `
-                );
-
-                this.inGamePlayers = [];
-                this.prepPlayersForMatch(data, this);
+                if(data.length != 0) {
+                    console.log('\n[Diet League Plugin]');
+                    console.log(
+                        `Moving players into their own voice channel for game ${gameNumber} . `
+                    );
+                    this.inGamePlayers = [];
+                    this.prepPlayersForMatch(data[0], this);
+                } else {
+                    console.log('\n[Diet League Plugin]');
+                    console.log(
+                        `Game ${gameNumber} does not have any players. `
+                    );
+                }
             });
     }
 
