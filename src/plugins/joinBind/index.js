@@ -14,13 +14,13 @@ class JoinBind {
     async init() {
         // init storage
         await storage.init({
-            dir: 'src/.storage/joinLeaveBinds',
+            dir: 'src/.storage',
             stringify: JSON.stringify,
             parse: JSON.parse,
             encoding: 'utf8',
             logging: false,
             expiredInterval: 2 * 60 * 1000,
-            forgiveParseErrors: false,
+            forgiveParseErrors: true,
         });
         this.joinLeaveBinds();
     }
@@ -45,6 +45,11 @@ class JoinBind {
                 // Extract bind, if exists
                 const params = this.userBindsMap[`${newMember.member.id}`];
                 if (params?.length) {
+                    console.log(
+                        `\n[JoinBind Plugin]\n ${
+                            newMember.member.displayName
+                        } joined a channel (Discord ID: ${newMember.member.id}). Running the command "${params.join(' ')}"`
+                    );
                     this.runCommand(
                         newUserChannel,
                         newMember.member,

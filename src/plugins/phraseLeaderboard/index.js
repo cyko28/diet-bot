@@ -15,17 +15,17 @@ class PhraseLeaderboard {
         this.trackedPhrases = {};
         this.phraseLeaderboardTrackingMap = {};
     }
-    init() {
+    async init() {
         // init storage
-        storage.init({
-            dir: 'src/.storage/phraseLeaderboard',
+        await storage.init({
+            dir: 'src/.storage',
             stringify: JSON.stringify,
             parse: JSON.parse,
             encoding: 'utf8',
             logging: false,
             ttl: false,
             expiredInterval: 2 * 60 * 1000,
-            forgiveParseErrors: false,
+            forgiveParseErrors: true,
         });
 
         setTimeout(
