@@ -9,24 +9,20 @@ class Say {
         this.pathToFile = path.join(__dirname, 'audio', 'say.wav');
     }
     async run(message, params = []) {
-        this.generateSpeech(params.join(' '));
         // Voice only works in guilds, if the message does not come from a guild,
         // we ignore it
         if (!message.guild) return;
 
         // Only try to join the sender's voice channel if they are in one themselves
         if (message.member.voice.channel) {
-            const connection = await message.member.voice.channel.join();
-
-            const dispatcher = connection.play(this.pathToFile);
-            dispatcher.on('finish', () => {
-                connection.disconnect();
-            });
+            this.generateSpeechAndPlayInChanel(params.join(' '), message.member.voice.channel);
         } else {
             message.reply('You need to join a voice channel first!');
         }
     }
-    generateSpeech(phrase) {
+    async generateSpeechAndPlayInChanel(phrase, channel) {
+        const connection = await channel.join();
+
         say.export(
             phrase,
             'Microsoft Zira Desktop',
@@ -36,6 +32,10 @@ class Say {
                 if (err) {
                     return console.error(err);
                 }
+                const dispatcher = connection.play(this.pathToFile);
+                dispatcher.on('finish', () => {
+                    connection.disconnect();
+                });
 
                 console.log(`\n[Say Plugin]\n"${phrase}" saved to say.mp3`);
             }
