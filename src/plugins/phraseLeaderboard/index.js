@@ -3,12 +3,12 @@ const path = require('path');
 const Discord = require('discord.js');
 const { debug, timeStamp } = require('console');
 const stringSimilarity = require('string-similarity');
-const storage = require('node-persist');
 
 class PhraseLeaderboard {
     constructor(bot, commandQueue) {
         this.bot = bot;
         this.commandQueue = commandQueue;
+        this.storage = commandQueue.botStorage;
         this.commands = ['leaderboard'];
         this.multiCommandMap = {}; // Used to hold a map of multipe bot commands to one master command.
         this.customTrackedPhrases = []; // Include custom phrases to be tracked here
@@ -16,18 +16,6 @@ class PhraseLeaderboard {
         this.phraseLeaderboardTrackingMap = {};
     }
     async init() {
-        // init storage
-        await storage.init({
-            dir: 'src/.storage',
-            stringify: JSON.stringify,
-            parse: JSON.parse,
-            encoding: 'utf8',
-            logging: false,
-            ttl: false,
-            expiredInterval: 2 * 60 * 1000,
-            forgiveParseErrors: true,
-        });
-
         setTimeout(
             async function () {
                 const trumpPlugin = this.commandQueue.plugins.get('trump');
@@ -78,7 +66,7 @@ class PhraseLeaderboard {
                 ] = trumpAudioNames;
 
                 const localStorageKey = 'phraseLeaderboardTrackingMap';
-                let storageTrackingMap = await storage.getItem(localStorageKey);
+                let storageTrackingMap = await this.storage.getItem(localStorageKey);
 
                 // If the storage map is populated, set that as the tracking map.
                 if (storageTrackingMap) {
@@ -260,7 +248,7 @@ class PhraseLeaderboard {
         }
         this.phraseLeaderboardTrackingMap[phrase] = phraseCountMap;
 
-        storage.setItem(
+        this.storage.setItem(
             'phraseLeaderboardTrackingMap',
             this.phraseLeaderboardTrackingMap
         );

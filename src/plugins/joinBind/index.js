@@ -1,32 +1,22 @@
 const fs = require('fs-extra');
 const path = require('path');
-const storage = require('node-persist');
 const { InputCommand } = require('../../services/command');
 
 class JoinBind {
     constructor(bot, commandQueue) {
         this.bot = bot;
         this.commandQueue = commandQueue;
+        this.storage = commandQueue.botStorage;
         this.commands = ['bind', 'unbind'];
         this.userBindsMap = {}; //Map to userId to command string. Ex: 12312321 -> ['!a eueue']
         this.localStorageKey = 'userBindsMap';
     }
     async init() {
-        // init storage
-        await storage.init({
-            dir: 'src/.storage',
-            stringify: JSON.stringify,
-            parse: JSON.parse,
-            encoding: 'utf8',
-            logging: false,
-            expiredInterval: 2 * 60 * 1000,
-            forgiveParseErrors: true,
-        });
         this.joinLeaveBinds();
     }
 
     joinLeaveBinds = async () => {
-        const savedStorageMap = await storage.getItem(this.localStorageKey);
+        const savedStorageMap = await this.storage.getItem(this.localStorageKey);
         if (savedStorageMap) {
             this.userBindsMap = savedStorageMap;
         }
@@ -84,7 +74,7 @@ class JoinBind {
         if (this.isValidCommand(params)) {
             const userId = message.author.id;
             this.userBindsMap[`${userId}`] = params;
-            await storage.setItem(this.localStorageKey, this.userBindsMap);
+            await this.storage.setItem(this.localStorageKey, this.userBindsMap);
             this.react(message, 'success');
             message.react('🚪');
             console.log(

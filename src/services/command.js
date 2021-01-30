@@ -1,4 +1,5 @@
 const path = require('path');
+const storage = require('node-persist');
 
 class CommandQueue {
     constructor(bot, options) {
@@ -9,10 +10,27 @@ class CommandQueue {
         this.pluginNames = options?.pluginNames ?? [];
         this.pluginDirPath = options?.pluginDirPath ?? './src/plugins';
         this.active = false;
+        this.botStorage = storage.create({
+            dir: 'src/.storage',
+            stringify: JSON.stringify,
+            parse: JSON.parse,
+            encoding: 'utf8',
+            logging: false,
+            expiredInterval: 2 * 60 * 1000,
+            forgiveParseErrors: true,
+        });
     }
+
     init() {
         this.loadPlugins();
+        this.setupBotStorage();
     }
+
+    async setupBotStorage() {
+        // init storage
+        await this.botStorage.init();
+    }
+
     add(inputCommand) {
         if (inputCommand.isValid) {
             this.buffer.push(inputCommand);
