@@ -105,6 +105,7 @@ class JoinBind {
     handleUnbind(message) {
         const userId = message.id;
         this.userBindsMap[`${userId}`] = {};
+        await this.storage.setItem(this.localStorageKey, this.userBindsMap);
         this.react(message, 'success');
         message.react('🚪');
         console.log(
