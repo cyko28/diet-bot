@@ -102,8 +102,8 @@ class JoinBind {
         }
     }
 
-    handleUnbind(message) {
-        const userId = message.id;
+    async handleUnbind(message) {
+        const userId = message.author.id;
         this.userBindsMap[`${userId}`] = {};
         await this.storage.setItem(this.localStorageKey, this.userBindsMap);
         this.react(message, 'success');
