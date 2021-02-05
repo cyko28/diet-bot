@@ -19,7 +19,8 @@ const pluginNames = [
     'joinAudio',
     'AutoMod',
     'stonks',
-    'DietLeague'
+    'DietLeague',
+    'cronSounds',
 ];
 const commandQueue = new CommandQueue(bot, { pluginNames });
 
