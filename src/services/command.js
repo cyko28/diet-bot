@@ -10,25 +10,23 @@ class CommandQueue {
         this.pluginNames = options?.pluginNames ?? [];
         this.pluginDirPath = options?.pluginDirPath ?? './src/plugins';
         this.active = false;
-        this.botStorage = storage.create({
+        storage.init({
             dir: 'src/.storage',
             stringify: JSON.stringify,
             parse: JSON.parse,
             encoding: 'utf8',
             logging: false,
-            expiredInterval: 2 * 60 * 1000,
+            expiredInterval: 3000,
             forgiveParseErrors: true,
         });
     }
 
     init() {
         this.loadPlugins();
-        this.setupBotStorage();
     }
 
-    async setupBotStorage() {
-        // init storage
-        await this.botStorage.init();
+    getBotStorage() {
+        return storage;
     }
 
     add(inputCommand) {

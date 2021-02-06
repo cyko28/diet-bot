@@ -8,7 +8,7 @@ class PhraseLeaderboard {
     constructor(bot, commandQueue) {
         this.bot = bot;
         this.commandQueue = commandQueue;
-        this.storage = commandQueue.botStorage;
+        this.storage = commandQueue.getBotStorage();
         this.commands = ['leaderboard'];
         this.multiCommandMap = {}; // Used to hold a map of multipe bot commands to one master command.
         this.customTrackedPhrases = []; // Include custom phrases to be tracked here
@@ -66,7 +66,7 @@ class PhraseLeaderboard {
                 ] = trumpAudioNames;
 
                 const localStorageKey = 'phraseLeaderboardTrackingMap';
-                let storageTrackingMap = await this.storage.getItem(localStorageKey);
+                let storageTrackingMap = this.storage.getItemSync(localStorageKey);
 
                 // If the storage map is populated, set that as the tracking map.
                 if (storageTrackingMap) {
@@ -248,7 +248,7 @@ class PhraseLeaderboard {
         }
         this.phraseLeaderboardTrackingMap[phrase] = phraseCountMap;
 
-        this.storage.setItem(
+        this.storage.setItemSync(
             'phraseLeaderboardTrackingMap',
             this.phraseLeaderboardTrackingMap
         );

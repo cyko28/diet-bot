@@ -6,7 +6,7 @@ class JoinBind {
     constructor(bot, commandQueue) {
         this.bot = bot;
         this.commandQueue = commandQueue;
-        this.storage = commandQueue.botStorage;
+        this.storage = commandQueue.getBotStorage();
         this.commands = ['bind', 'unbind'];
         this.userBindsMap = {}; //Map to userId to command string. Ex: 12312321 -> ['!a eueue']
         this.localStorageKey = 'userBindsMap';
@@ -16,7 +16,7 @@ class JoinBind {
     }
 
     joinLeaveBinds = async () => {
-        const savedStorageMap = await this.storage.getItem(this.localStorageKey);
+        const savedStorageMap = await this.storage.getItemSync(this.localStorageKey);
         if (savedStorageMap) {
             this.userBindsMap = savedStorageMap;
         }
@@ -74,7 +74,7 @@ class JoinBind {
         if (this.isValidCommand(params)) {
             const userId = message.author.id;
             this.userBindsMap[`${userId}`] = params;
-            await this.storage.setItem(this.localStorageKey, this.userBindsMap);
+            await this.storage.setItemSync(this.localStorageKey, this.userBindsMap);
             this.react(message, 'success');
             message.react('🚪');
             console.log(
@@ -105,7 +105,7 @@ class JoinBind {
     async handleUnbind(message) {
         const userId = message.author.id;
         this.userBindsMap[`${userId}`] = {};
-        await this.storage.setItem(this.localStorageKey, this.userBindsMap);
+        await this.storage.setItemSync(this.localStorageKey, this.userBindsMap);
         this.react(message, 'success');
         message.react('🚪');
         console.log(
