@@ -94,6 +94,9 @@ class NefariousStatuses {
             `Spreading The Rona`,
             `Gaining sentience`,
             `Deciding how to spell Jabroni`,
+            `Buying GME`,
+            `Selling ${user}'s GME`,
+            `Folding ${user} in half`,
         ];
     }
 }
