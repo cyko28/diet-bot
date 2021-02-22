@@ -13,7 +13,6 @@ const pluginNames = [
     'say',
     'insult',
     'bully',
-    'phraseLeaderboard',
     'shutdown',
     'joinBind',
     'joinAudio',
@@ -21,6 +20,7 @@ const pluginNames = [
     'stonks',
     'DietLeague',
     'cronSounds',
+    'trendingStonks',
 ];
 const commandQueue = new CommandQueue(bot, { pluginNames });
 
