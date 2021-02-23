@@ -13,7 +13,7 @@ const pluginNames = [
     'say',
     'insult',
     'bully',
-    'phraseLeaderboard',
+    // 'phraseLeaderboard',
     'shutdown',
     'joinBind',
     'joinAudio',
