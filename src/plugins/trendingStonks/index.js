@@ -13,7 +13,6 @@ class TrendingStonks {
         this.status = null;
     }
     init() {
-        this.hitAPI();
         cron.schedule('0 0 9,12,16 * * *', () => {
             this.hitAPI();
         });

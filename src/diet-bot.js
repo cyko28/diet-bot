@@ -22,6 +22,7 @@ const pluginNames = [
     'DietLeague',
     'cronSounds',
     'trendingStonks',
+    'ape',
 ];
 const commandQueue = new CommandQueue(bot, { pluginNames });
 
