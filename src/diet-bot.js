@@ -23,6 +23,7 @@ const pluginNames = [
     'cronSounds',
     'trendingStonks',
     'ape',
+    'jabroni',
 ];
 const commandQueue = new CommandQueue(bot, { pluginNames });
 
